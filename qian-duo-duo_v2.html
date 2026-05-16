@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>钱多多 - AI理财陪伴助手</title>
+<script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js"></script>
+<script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js"></script>
+<script defer="" src="https://modao.cc/agent-py/static/source/js/echarts.min.js"></script>
+<style>
+        @keyframes pulse-gold {
+            0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 0px #FFD700); }
+            50% { transform: scale(1.05); opacity: 0.9; filter: drop-shadow(0 0 15px #FFD700); }
+        }
+        .animate-pulse-gold { animation: pulse-gold 2s infinite ease-in-out; }
+        
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fade-in 0.4s ease-out forwards; }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+        .shine-effect::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+            transform: skewX(-25deg);
+            animation: shine 2s infinite;
+        }
+
+        .hide { display: none !important; }
+        
+        .iphone-frame {
+            width: 390px;
+            height: 844px;
+            border-radius: 40px;
+            border: 8px solid #1f2937;
+            position: relative;
+            overflow: hidden;
+            background: #F3F4F6;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .scroll-container {
+            height: calc(844px - 140px);
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        .scroll-container::-webkit-scrollbar { display: none; }
+
+        .tab-active { color: #E60113; }
+        .tab-inactive { color: #9CA3AF; }
+
+        .progress-fill { transition: width 1s ease-in-out; }
+
+        @keyframes scale-in {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .scale-in { animation: scale-in 0.3s ease-out forwards; }
+
+        @keyframes subtitle-in {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .subtitle-enter { animation: subtitle-in 0.35s ease-out; }
+
+        .tooltip-card { display: none; }
+        .group:hover .tooltip-card { display: block; }
+
+        .asset-stat-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .asset-stat-label {
+            font-size: 12px;
+            line-height: 1.35;
+            color: #9CA3AF;
+            margin-bottom: 12px;
+        }
+
+        .asset-stat-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .asset-stat-value {
+            min-width: 0;
+            white-space: nowrap;
+            overflow: visible;
+            font-size: 34px;
+            line-height: 1;
+            font-weight: 700;
+            color: #FF7A00;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0;
+            max-width: 100%;
+            flex: 1;
+        }
+
+        .asset-stat-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 9999px;
+            background: #FF9A1F;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .asset-stat-content {
+            min-width: 0;
+            flex: 1;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .modal-analysis-shell {
+            max-height: 75vh;
+            min-height: 75vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-analysis-body {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .modal-analysis-footer {
+            padding-top: 12px;
+            border-top: 1px solid #F1F5F9;
+            background: #fff;
+        }
+
+        .feature-link-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 18px;
+            border: 1px solid #E5E7EB;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            text-align: left;
+            transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .feature-link-card:hover {
+            border-color: rgba(230, 1, 19, 0.22);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .feature-link-card.primary {
+            border-color: rgba(230, 1, 19, 0.14);
+            background: linear-gradient(135deg, #fff5f5, #ffffff 58%, #fff1f2);
+        }
+
+        .notification-scene-shell {
+            background:
+                radial-gradient(circle at 70% 18%, rgba(255,255,255,0.34), transparent 16%),
+                radial-gradient(circle at 52% 58%, rgba(255,255,255,0.24), transparent 18%),
+                linear-gradient(180deg, #293BFF 0%, #2427D7 44%, #2A1FC8 100%);
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .notification-card {
+            border-radius: 28px;
+            padding: 18px 18px 16px;
+            background: linear-gradient(135deg, rgba(11, 15, 32, 0.92), rgba(24, 28, 54, 0.88));
+            box-shadow: 0 20px 32px rgba(6, 10, 30, 0.22);
+            backdrop-filter: blur(10px);
+        }
+
+        .news-thumb {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+
+        .news-thumb::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.28));
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-200 flex items-center justify-center min-h-screen font-sans text-gray-800">
+<div class="iphone-frame bg-white">
+<!-- 顶部状态栏模拟 -->
+<div class="h-8 w-full flex justify-between items-center px-8 pt-2 z-50 bg-transparent">
+<span class="text-xs font-bold" id="status-time">16:28</span>
+<div class="flex gap-1">
+<iconify-icon class="text-xs" icon="mdi:signal"></iconify-icon>
+<iconify-icon class="text-xs" icon="mdi:wifi"></iconify-icon>
+<iconify-icon class="text-xs" icon="mdi:battery"></iconify-icon>
+</div>
+</div>
+<!-- 页面容器 -->
+<div class="relative h-full w-full" id="page-container">
+<!-- 1. 欢迎首页 -->
+<section class="h-full flex flex-col px-6 pt-10 pb-8 animate-fade-in relative overflow-hidden" id="page-welcome">
+<div class="w-full flex justify-start">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full overflow-hidden bg-white shadow-sm ring-1 ring-black/5 flex items-center justify-center shrink-0">
+<img alt="招商银行" class="w-full h-full object-cover" src="./素材/招商银行logo.png"/>
+</div>
+<div class="w-7 h-7 rounded-full overflow-hidden bg-white shadow-sm ring-1 ring-black/5 flex items-center justify-center shrink-0">
+<img alt="钱多多头像" class="w-full h-full object-cover" src="./素材/二维logo头像.png"/>
+</div>
+<span class="text-[11px] font-bold tracking-tight">招商银行 | 钱多多</span>
+</div>
+</div>
+<div class="flex-1 w-full flex flex-col items-center justify-start pt-10">
+<div class="w-full max-w-[290px]">
+<div class="relative rounded-[32px] overflow-hidden bg-[#FFF7DB] shadow-[0_20px_45px_rgba(230,1,19,0.10)] ring-1 ring-[#F8E7A3]">
+<video autoplay="" class="w-full h-[380px] object-cover object-center" id="welcome-video" loop="" muted="" playsinline="" preload="auto">
+<source src="./素材/kling_20260516_作品_钱多多新手引导视频镜_373_0.mp4" type="video/mp4"/>
+</video>
+<div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/70 via-black/25 to-transparent">
+<div class="inline-flex items-center gap-2 bg-white/92 backdrop-blur-sm rounded-full px-3 py-1.5 mb-3 shadow-sm">
+<img alt="钱多多头像" class="w-4 h-4 rounded-full object-cover" src="./素材/二维logo头像.png"/>
+<span class="text-[11px] font-semibold text-gray-800">钱多多正在和你打招呼</span>
+</div>
+<p class="text-white text-[15px] leading-6 font-medium min-h-[48px] drop-shadow-sm" id="welcome-subtitle">
+                                嗨，我是钱多多，你的 AI 理财小助手。
+                            </p>
+</div>
+</div>
+<div class="text-center mt-6 px-2">
+<h1 class="text-[30px] leading-tight font-bold text-gray-900 mb-2">让理财这件事，轻松一点</h1>
+<p class="text-sm text-gray-500 leading-6">
+                            我会帮你分析消费习惯，制定个性化理财方案，陪你一步步把钱管明白。
+                        </p>
+</div>
+</div>
+</div>
+<div class="w-full mt-0 -translate-y-3">
+<button class="w-full bg-[#E60113] text-white py-4 rounded-xl font-bold shadow-lg hover:translate-y-[-2px] transition-all" onclick="switchPage('page-survey')">
+                        开始探索
+                    </button>
+</div>
+<div class="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-[#FFD700]/20 to-transparent rounded-tl-full -z-10"></div>
+</section>
+<!-- 2. 用户问卷页 -->
+<section class="h-full flex flex-col py-8 px-6 hide animate-fade-in" id="page-survey">
+<div class="flex items-center justify-between mb-8">
+<button class="text-gray-400" onclick="switchPage('page-welcome')">
+<iconify-icon class="text-2xl" icon="mdi:chevron-left"></iconify-icon>
+</button>
+<div class="flex-1 mx-4">
+<div class="h-1.5 w-full bg-gray-200 rounded-full overflow-visible relative">
+<div class="h-full bg-[#E60113] progress-fill" id="survey-progress" style="width: 20%;"></div>
+<div class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-[20%] w-11 h-11 rounded-full overflow-hidden bg-white shadow-lg ring-2 ring-white transition-all duration-500 z-50" id="survey-runner">
+<img alt="钱多多进度" class="w-full h-full object-cover" src="./素材/二维logo头像.png"/>
+</div>
+</div>
+</div>
+<span class="text-xs font-bold text-gray-500" id="survey-step">1/5</span>
+</div>
+<h2 class="text-2xl font-bold mb-8 leading-tight" id="survey-title">认识你，很高兴</h2>
+<div class="flex-1 -mt-2" id="survey-content">
+<!-- 动态注入题目 -->
+</div>
+<div class="h-[220px] mb-4 rounded-[28px] bg-[#FFF8E7] shadow-inner overflow-hidden relative ring-1 ring-[#F3DCA3]">
+<div class="absolute inset-0 bg-[radial-gradient(circle_at_25%_45%,rgba(255,255,255,0.92),rgba(255,248,231,0.55)_36%,rgba(255,243,196,0.96)_100%)]"></div>
+<div class="absolute inset-y-6 left-5 right-5 rounded-[24px] bg-gradient-to-r from-[#FFF1C9] via-[#FDE8B8] to-[#F7D68A] opacity-85 blur-[2px]"></div>
+<div class="absolute inset-y-6 left-6 right-6 rounded-[24px] border border-white/45"></div>
+<div class="absolute left-6 right-6 bottom-8 h-2 rounded-full bg-[#E7D09A]/80 overflow-hidden">
+<div class="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#E2B858] via-[#F7E0A2] to-[#F0C96B] opacity-70" style="width: 56%;"></div>
+</div>
+<div class="absolute top-4 bottom-4 w-[180px] transition-all duration-500 mix-blend-multiply opacity-95" id="survey-track-visual" style="left: 2%;">
+<video autoplay="" class="h-full w-full object-cover object-center scale-[1.05] saturate-[0.88] contrast-[0.92] brightness-[1.04]" loop="" muted="" playsinline="">
+<source src="./素材/钱多多奔跑.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="absolute inset-y-4 left-0 w-[48%] bg-gradient-to-r from-[#FFF5D5]/58 via-[#FFF1CA]/20 to-transparent pointer-events-none"></div>
+<div class="absolute left-4 bottom-6 text-[11px] text-[#9A7B28] font-medium">钱多多陪你跑完全程</div>
+</div>
+<div class="flex gap-4 mt-2 mb-6">
+<button class="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-bold" id="survey-prev" onclick="prevSurvey()">返回</button>
+<button class="flex-1 bg-[#E60113] text-white py-4 rounded-xl font-bold shadow-lg disabled:opacity-50" disabled="" id="survey-next" onclick="nextSurvey()">下一步</button>
+</div>
+</section>
+<!-- 3. 个性化理财方案结果页 -->
+<section class="h-full flex flex-col py-8 px-6 hide animate-fade-in bg-[#F3F4F6]" id="page-result">
+<h2 class="text-2xl font-bold mb-1">你的专属理财方案</h2>
+<p class="text-sm text-gray-500 mb-2">经过我的严密计算</p>
+<div class="bg-[#E60113]/5 border border-[#E60113]/10 p-6 rounded-2xl mb-6 flex justify-between items-center">
+<div>
+<p class="text-xs text-gray-500 mb-1">月均可支配金额</p>
+<p class="text-3xl font-bold text-[#E60113]">¥ <span id="res-disposable">2,500</span></p>
+</div>
+<iconify-icon class="text-4xl text-[#E60113]/30" icon="mdi:wallet-outline"></iconify-icon>
+</div>
+<div class="space-y-4 flex-1">
+<div class="bg-white p-4 rounded-2xl shadow-sm animate-fade-in" style="animation-delay: 0.1s;">
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-2">
+<iconify-icon class="text-[#E60113]" icon="mdi:home-outline"></iconify-icon>
+<span class="font-bold">📍 生活成本</span>
+</div>
+<span class="text-xs font-bold text-gray-500">60% / ¥1500</span>
+</div>
+<div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden mb-2">
+<div class="h-full bg-[#E60113] progress-fill" style="width: 60%;"></div>
+</div>
+<p class="text-[10px] text-gray-400">覆盖日常饮食、交通及必要开支</p>
+</div>
+<div class="bg-white p-4 rounded-2xl shadow-sm animate-fade-in" style="animation-delay: 0.2s;">
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-2">
+<iconify-icon class="text-[#FFD700]" icon="mdi:star-outline"></iconify-icon>
+<span class="font-bold">🎨 精神消费</span>
+</div>
+<span class="text-xs font-bold text-gray-500">20% / ¥500</span>
+</div>
+<div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden mb-2">
+<div class="h-full bg-[#FFD700] progress-fill" style="width: 20%;"></div>
+</div>
+<p class="text-[10px] text-gray-400">适度娱乐、社交，提升生活幸福感</p>
+</div>
+<div class="bg-white p-4 rounded-2xl shadow-sm animate-fade-in" style="animation-delay: 0.3s;">
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-2">
+<iconify-icon class="text-[#10B981]" icon="mdi:trending-up"></iconify-icon>
+<span class="font-bold">📈 投资理财</span>
+</div>
+<span class="text-xs font-bold text-gray-500">20% / ¥500</span>
+</div>
+<div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden mb-2">
+<div class="h-full bg-[#10B981] progress-fill" style="width: 20%;"></div>
+</div>
+<p class="text-[10px] text-gray-400">从零开始积累，享受复利带来的增值</p>
+</div>
+</div>
+<p class="text-sm text-gray-500 mt-5 mb-3">当然你也可以自己调整</p>
+<div class="flex gap-4 mt-auto mb-6">
+<button class="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-bold" onclick="switchPage('page-survey')">返回</button>
+<button class="flex-1 bg-[#E60113] text-white py-4 rounded-xl font-bold shadow-lg" onclick="switchPage('page-adopt')">我同意</button>
+</div>
+</section>
+<!-- 4. 领养授权载入页 -->
+<section class="h-full flex flex-col items-center justify-center py-8 px-10 hide animate-fade-in" id="page-adopt">
+<div class="flex flex-col items-center" id="adopt-loading">
+<div class="w-16 h-16 border-4 border-gray-100 border-t-[#E60113] rounded-full animate-spin mb-6"></div>
+<p class="text-lg font-bold">AI正在绑定专属理财陪伴服务...</p>
+<p class="text-xs text-gray-400 mt-2">正在同步您的招行资产数据</p>
+</div>
+<div class="flex flex-col items-center hide text-center" id="adopt-success">
+<div class="w-60 h-36 bg-white rounded-full flex items-center justify-center shadow-xl mb-8 animate-pulse-gold overflow-hidden ring-1 ring-[#F3E39B]">
+<img alt="钱多多躺着赚钱" class="w-full h-full object-cover" src="./素材/躺着赚钱.png"/>
+</div>
+<h2 class="text-2xl font-bold mb-4">钱多多领养成功！</h2>
+<p class="text-gray-600 mb-8">「我会陪你把钱越变越多的！」</p>
+<div class="bg-gray-50 p-4 rounded-xl text-left mb-8 w-full">
+<div class="flex items-center gap-2 mb-2">
+<iconify-icon class="text-[#10B981]" icon="mdi:shield-check"></iconify-icon>
+<span class="text-xs font-bold uppercase tracking-wider text-gray-400">隐私保障</span>
+</div>
+<p class="text-[10px] text-gray-500 leading-relaxed">
+                            钱多多已为您开启金融级加密，所有消费与资产数据仅用于为您提供理财决策支持，绝不向第三方泄露。
+                        </p>
+</div>
+<button class="w-full bg-[#E60113] text-white py-4 rounded-xl font-bold shadow-lg" onclick="switchPage('page-main', 'spend')">
+                        立即进入首页
+                    </button>
+</div>
+</section>
+<!-- 5. APP主首页 (包含多Tab) -->
+<section class="h-full flex flex-col hide bg-[#F3F4F6]" id="page-main">
+<!-- 主内容滚动区 -->
+<div class="flex-1 scroll-container pb-28" id="main-content">
+<!-- Tab 1: 花前钱 (消费决策) -->
+<div class="p-6 space-y-6 animate-fade-in" id="tab-spend">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<img alt="User Avatar" class="w-10 h-10 rounded-full border-2 border-white shadow-sm cursor-pointer" onclick="switchTab('profile')" src="https://modao.cc/agent-py/media/generated_images/2026-05-15/642485ffa36c436786bd8e719c771afe.jpg"/>
+<div>
+<p class="text-xs text-gray-400">下午好，</p>
+<p class="font-bold">理财达人小张</p>
+</div>
+</div>
+<div class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full border border-gray-100 flex items-center gap-1">
+<span class="text-[10px] font-bold text-[#E60113]">这是钱多多陪伴你第15天</span>
+</div>
+</div>
+<!-- AI 统计卡片 -->
+<div class="bg-[#E60113] rounded-3xl p-6 text-white shadow-xl relative overflow-visible shine-effect -mt-4">
+<div class="relative z-10">
+<p class="text-xs opacity-80 mb-1">本月钱多多帮你规避非必要支出</p>
+<p class="text-3xl font-bold mb-4">¥ 1,280.00</p>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-white/10 rounded-xl p-2 relative group cursor-default">
+<p class="text-[10px] opacity-70">拦截风险消费</p>
+<p class="text-lg font-bold">12 次</p>
+<div class="tooltip-card absolute left-0 bottom-full mb-2 w-40 rounded-xl bg-white text-gray-700 p-3 shadow-xl text-[10px] leading-5 z-20">
+<p class="font-bold text-xs text-gray-900 mb-1">高风险消费类型</p>
+<p><span class="text-[#E60113]">●</span> 跟风下单: 4 次</p>
+<p><span class="text-[#F97316]">●</span> 促销但不必要: 3 次</p>
+<p><span class="text-[#FFD700]">●</span> 情绪型消费: 3 次</p>
+<p><span class="text-[#10B981]">●</span> 重复购入: 2 次</p>
+</div>
+</div>
+<div class="bg-white/10 rounded-xl p-2 relative group cursor-default">
+<p class="text-[10px] opacity-70">预计多存</p>
+<p class="text-lg font-bold">¥ 850</p>
+<div class="tooltip-card absolute right-0 bottom-full mb-2 w-40 rounded-xl bg-white text-gray-700 p-3 shadow-xl text-[10px] leading-5 z-20">
+<p class="font-bold text-xs text-gray-900 mb-1">目标加速预测</p>
+<p>按照当前节流速度，预计可提前 <span class="text-[#E60113] font-bold">38 天</span> 买到 MacBook Air。</p>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute -right-3 -bottom-3 w-28 h-28 opacity-20">
+<img alt="钱多多水印" class="w-full h-full object-contain" src="./素材/二维logo头像.png"/>
+</div>
+</div>
+<!-- 消费趋势图表 -->
+<div class="bg-white rounded-2xl p-4 shadow-sm relative">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-bold">本周消费趋势</h3>
+<div class="relative">
+<button class="text-gray-400 hover:text-gray-600 transition-colors" onclick="toggleTrendMenu()" type="button">
+<iconify-icon class="text-lg" icon="mdi:dots-vertical"></iconify-icon>
+</button>
+<div class="absolute right-0 top-7 w-28 bg-white rounded-2xl shadow-xl border border-gray-100 p-1 hide z-20" id="trend-period-menu">
+<button class="w-full text-left px-3 py-2 rounded-xl text-[11px] font-bold bg-red-50 text-[#E60113]" type="button">上周</button>
+<button class="w-full text-left px-3 py-2 rounded-xl text-[11px] font-bold text-gray-500 hover:bg-gray-50" type="button">今年</button>
+<button class="w-full text-left px-3 py-2 rounded-xl text-[11px] font-bold text-gray-500 hover:bg-gray-50" type="button">去年</button>
+</div>
+</div>
+</div>
+<div class="h-44 w-full bg-gray-50 rounded-xl" id="spend-chart"></div>
+<div class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[10px] text-gray-500">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#E60113]"></span>餐饮</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#3B82F6]"></span>交通</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>购物</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#10B981]"></span>日用</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#8B5CF6]"></span>其他</span>
+</div>
+<div class="mt-4 flex items-center justify-between p-3 bg-red-50 rounded-xl">
+<div class="flex items-center gap-2">
+<iconify-icon class="text-[#E60113]" icon="mdi:alert-circle"></iconify-icon>
+<span class="text-xs font-bold text-[#E60113]">今日消费已达预算 95%</span>
+</div>
+<button class="text-[10px] bg-[#E60113] text-white px-2 py-1 rounded-md" onclick="showModal('modal-warning')">查看分析</button>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-4 shadow-sm">
+<div class="flex items-start justify-between gap-3">
+<div>
+<p class="text-sm font-bold mb-1">本周消费报告</p>
+<p class="text-[11px] text-gray-400 leading-5">点开看看钱都花在哪儿了，钱多多已经帮你整理好重点。</p>
+</div>
+<button class="shrink-0 px-3 py-2 rounded-xl bg-[#E60113] text-white text-xs font-bold" onclick="showModal('modal-weekly-report')">查看报告</button>
+</div>
+</div>
+<!-- 智能监护开关 -->
+<div class="bg-white rounded-[24px] p-4 shadow-sm flex items-center justify-between border border-[#E8F3EE] relative overflow-hidden" id="guardian-card">
+<div class="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-[#E8FBF4] to-transparent pointer-events-none"></div>
+<div class="flex items-center gap-3 relative z-10 min-w-0">
+<div class="w-12 h-12 bg-gradient-to-br from-[#E8FBF4] to-[#CFF6E8] rounded-2xl flex items-center justify-center transition-colors shadow-sm" id="guardian-icon-wrap">
+<iconify-icon class="text-2xl text-[#10B981] transition-colors" icon="mdi:shield-check-outline" id="guardian-icon"></iconify-icon>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2 py-0.5 rounded-full bg-[#ECFDF5] text-[#10B981] text-[9px] font-bold tracking-wide">AI 守护中</span>
+<span class="text-[9px] text-gray-400">实时评估</span>
+</div>
+<p class="text-[18px] leading-none font-bold text-[#1F2937]">AI 消费智能监护</p>
+<p class="text-[11px] text-gray-400 mt-1 leading-5" id="guardian-copy">消费前自动评估风险，拦截冲动行为</p>
+</div>
+</div>
+<div class="flex items-center gap-3 relative z-10">
+<button class="text-gray-300 hover:text-gray-500 transition-colors" onclick="closeGuardianCard()" type="button">
+<iconify-icon class="text-xl" icon="mdi:close-circle-outline"></iconify-icon>
+</button>
+<button class="w-14 h-8 bg-[#10B981] rounded-full relative p-1 cursor-pointer transition-colors shadow-inner shadow-emerald-700/10" id="guardian-toggle" onclick="toggleGuardian()" type="button">
+<div class="w-6 h-6 bg-white rounded-full absolute right-1 top-1 transition-all duration-300 shadow-sm" id="guardian-knob"></div>
+</button>
+</div>
+</div>
+</div>
+<!-- Tab 2: 钱生钱 (投资理财) -->
+<div class="p-6 space-y-6 hide animate-fade-in" id="tab-invest">
+<h2 class="text-xl font-bold">投资理财</h2>
+<div class="bg-white rounded-2xl p-6 shadow-sm">
+<p class="text-xs text-gray-400 mb-1">总资产 (元)</p>
+<div class="flex items-end gap-2 mb-4">
+<p class="text-3xl font-bold">12,450.00</p>
+<span class="text-xs text-[#E60113] mb-1 font-bold">+1.25%</span>
+</div>
+<div class="grid grid-cols-2 gap-4 border-t pt-4">
+<div>
+<p class="text-[10px] text-gray-400">今日收益</p>
+<p class="text-sm font-bold text-[#E60113]">+15.20</p>
+</div>
+<div>
+<p class="text-[10px] text-gray-400">累计收益</p>
+<p class="text-sm font-bold text-[#E60113]">+450.80</p>
+</div>
+</div>
+</div>
+<!-- 资产分配 -->
+<div class="bg-white rounded-2xl p-4 shadow-sm">
+<h3 class="font-bold mb-4">资产分配</h3>
+<div class="flex items-center gap-6">
+<div class="w-24 h-24 rounded-full border-[10px] border-[#E60113] border-l-[#FFD700] border-b-[#10B981] relative">
+<div class="absolute inset-0 flex items-center justify-center flex-col">
+<span class="text-[8px] text-gray-400">健康度</span>
+<span class="text-xs font-bold">优秀</span>
+</div>
+</div>
+<div class="flex-1 space-y-2">
+<div class="flex items-center justify-between text-xs">
+<div class="flex items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-[#E60113]"></div>
+<span>活期存款</span>
+</div>
+<span class="font-bold">50%</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<div class="flex items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-[#FFD700]"></div>
+<span>定期/债券</span>
+</div>
+<span class="font-bold">35%</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<div class="flex items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-[#10B981]"></div>
+<span>成长基金</span>
+</div>
+<span class="font-bold">15%</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-4 bg-gray-50 text-[#E60113] py-3 rounded-xl text-xs font-bold border border-[#E60113]/10" onclick="switchPage('page-portfolio')">
+                                AI 智能调仓建议
+                            </button>
+</div>
+<!-- 金融热点 -->
+<div>
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-bold">金融热点</h3>
+<span class="text-xs text-gray-400">查看更多</span>
+</div>
+<div class="space-y-3">
+<button class="w-full bg-white p-3 rounded-xl shadow-sm flex gap-3 text-left items-start hover:shadow-md transition-shadow" onclick="openInvestmentAgent('rate-cut')">
+<div class="w-16 h-16 bg-gray-100 news-thumb shrink-0">
+<img alt="黄金机会" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1610375461369-d613b5647f66?auto=format&fit=crop&w=300&q=80"/>
+</div>
+<div class="flex-1">
+<p class="text-xs font-bold line-clamp-2"><span class="text-[#E60113]">美联储降息预期升温</span>，<span class="text-[#F59E0B]">黄金板块</span>迎来布局机会？</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="text-[8px] bg-red-50 text-[#E60113] px-1 rounded">机会评级 A</span>
+<span class="text-[8px] text-gray-400">2小时前</span>
+</div>
+</div>
+</button>
+<button class="w-full bg-white p-3 rounded-xl shadow-sm flex gap-3 text-left items-start hover:shadow-md transition-shadow" onclick="openInvestmentAgent('dca-guide')">
+<div class="w-16 h-16 bg-gray-100 news-thumb shrink-0">
+<img alt="定投教学" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=300&q=80"/>
+</div>
+<div class="flex-1">
+<p class="text-xs font-bold line-clamp-2"><span class="text-[#3B82F6]">小白如何开启定投？</span><span class="text-[#E60113]">招行AI导师</span>手把手教你避坑</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="text-[8px] bg-blue-50 text-blue-500 px-1 rounded">教学</span>
+<span class="text-[8px] text-gray-400">5小时前</span>
+</div>
+</div>
+</button>
+</div>
+</div>
+</div>
+<!-- Tab 3: 我真棒 (成就激励) -->
+<div class="p-6 space-y-6 hide animate-fade-in" id="tab-awards">
+<div class="rounded-[28px] bg-gradient-to-br from-[#FFF7E3] via-white to-[#FFF1D6] border border-[#FCE7B2] p-5 shadow-sm">
+<div class="flex items-center gap-4">
+<div class="w-20 h-20 bg-gradient-to-br from-[#FFD54F] to-[#F59E0B] rounded-[24px] flex items-center justify-center shadow-lg relative shrink-0">
+<iconify-icon class="text-4xl text-white" icon="mdi:trophy-variant-outline"></iconify-icon>
+<div class="absolute -bottom-2 bg-white px-3 py-1 rounded-full border border-[#FBBF24] shadow-sm">
+<span class="text-[10px] font-bold text-[#F59E0B]">LV.5 攒钱达人</span>
+</div>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-1 rounded-full bg-[#FEF3C7] text-[#B45309] text-[10px] font-bold">成长中</span>
+<span class="text-[10px] text-gray-400">连续存钱 15 天</span>
+</div>
+<p class="text-lg font-bold text-gray-900 leading-7">已击败全国 85.4% 的同龄人</p>
+<p class="text-[11px] text-gray-500 leading-5 mt-2">钱多多评估你最近的消费克制度、攒钱完成率和风险回避能力都在稳步提升。</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-3 mt-5">
+<button class="rounded-2xl bg-white/90 border border-[#FDE7A8] p-3 text-center transition hover:shadow-sm hover:border-[#F59E0B] hover:-translate-y-[1px]" onclick="showModal('modal-skin-shop')">
+<p class="text-[10px] text-gray-400">本月积分</p>
+<p class="text-base font-bold text-[#F59E0B] mt-1">2,480</p>
+</button>
+<div class="rounded-2xl bg-white/90 border border-[#FDE7A8] p-3 text-center">
+<p class="text-[10px] text-gray-400">下一等级</p>
+<p class="text-base font-bold text-gray-900 mt-1">还差 320</p>
+</div>
+<div class="rounded-2xl bg-white/90 border border-[#FDE7A8] p-3 text-center">
+<p class="text-[10px] text-gray-400">称号特权</p>
+<p class="text-base font-bold text-gray-900 mt-1">3 项</p>
+</div>
+</div>
+</div>
+<!-- 勋章墙 -->
+<div class="bg-white rounded-2xl p-4 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-bold">我的勋章</h3>
+<button class="text-[11px] text-[#E60113] font-bold flex items-center gap-1" onclick="showModal('modal-badges-more')">
+更多勋章
+<iconify-icon class="text-sm" icon="mdi:chevron-right"></iconify-icon>
+</button>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div class="flex flex-col items-center gap-1">
+<div class="w-16 h-16 bg-yellow-50 rounded-full flex items-center justify-center border-2 border-[#FFD700] animate-pulse-gold">
+<iconify-icon class="text-3xl text-[#FFD700]" icon="mdi:piggy-bank"></iconify-icon>
+</div>
+<span class="text-[10px] font-bold">理财小白</span>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center border-2 border-[#10B981]">
+<iconify-icon class="text-3xl text-[#10B981]" icon="mdi:shield-check"></iconify-icon>
+</div>
+<span class="text-[10px] font-bold">风险卫士</span>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center border-2 border-[#E60113]">
+<iconify-icon class="text-3xl text-[#E60113]" icon="mdi:fire"></iconify-icon>
+</div>
+<span class="text-[10px] font-bold">15天连存</span>
+</div>
+<div class="flex flex-col items-center gap-1 opacity-40 grayscale">
+<div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center border-2 border-gray-300">
+<iconify-icon class="text-3xl text-gray-400" icon="mdi:crown"></iconify-icon>
+</div>
+<span class="text-[10px] font-bold">攒钱王者</span>
+</div>
+<div class="flex flex-col items-center gap-1 opacity-40 grayscale">
+<div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center border-2 border-gray-300">
+<iconify-icon class="text-3xl text-gray-400" icon="mdi:rocket-launch"></iconify-icon>
+</div>
+<span class="text-[10px] font-bold">复利大师</span>
+</div>
+<div class="flex flex-col items-center gap-1 opacity-40 grayscale">
+<div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center border-2 border-gray-300">
+<iconify-icon class="text-3xl text-gray-400" icon="mdi:account-group"></iconify-icon>
+</div>
+<span class="text-[10px] font-bold">社交达人</span>
+</div>
+</div>
+</div>
+<!-- 社交榜单 -->
+<div class="bg-white rounded-2xl p-4 shadow-sm">
+<h3 class="font-bold mb-4">好友攒钱榜</h3>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<span class="w-4 text-xs font-bold text-gray-400">1</span>
+<img class="w-8 h-8 rounded-full" src="/agent-py/static/source/images/placeholder.svg"/>
+<div class="flex-1">
+<p class="text-xs font-bold">林小夕</p>
+<div class="h-1.5 w-full bg-gray-100 rounded-full mt-1 overflow-hidden">
+<div class="h-full bg-[#FFD700]" style="width: 95%;"></div>
+</div>
+</div>
+<span class="text-[10px] font-bold">¥5,200</span>
+</div>
+<div class="flex items-center gap-3 bg-red-50 p-2 rounded-lg">
+<span class="w-4 text-xs font-bold text-[#E60113]">2</span>
+<img class="w-8 h-8 rounded-full border border-[#E60113]" src="/agent-py/static/source/images/placeholder.svg"/>
+<div class="flex-1">
+<p class="text-xs font-bold">我 (小张)</p>
+<div class="h-1.5 w-full bg-gray-200 mt-1 overflow-hidden rounded-full">
+<div class="h-full bg-[#E60113]" style="width: 82%;"></div>
+</div>
+</div>
+<span class="text-[10px] font-bold">¥4,150</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-4 text-xs font-bold text-gray-400">3</span>
+<img class="w-8 h-8 rounded-full" src="/agent-py/static/source/images/placeholder.svg"/>
+<div class="flex-1">
+<p class="text-xs font-bold">陈阿强</p>
+<div class="h-1.5 w-full bg-gray-100 mt-1 overflow-hidden rounded-full">
+<div class="h-full bg-gray-300" style="width: 65%;"></div>
+</div>
+</div>
+<span class="text-[10px] font-bold">¥3,200</span>
+</div>
+</div>
+<button class="w-full mt-4 py-3 text-xs text-[#E60113] font-bold bg-red-50 rounded-xl border border-[#E60113]/10" onclick="showModal('modal-invite-friends')">邀请好友组队攒钱</button>
+</div>
+</div>
+<!-- Tab 4: 我的 (个人中心) -->
+<div class="p-0 hide animate-fade-in" id="tab-profile">
+<div class="scroll-container px-6 pt-6 pb-28">
+<div class="rounded-[28px] bg-gradient-to-br from-[#FFF3E0] via-white to-[#FFF8EF] p-5 shadow-sm mb-5">
+<div class="flex items-start justify-between mb-5">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="小张头像" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md" src="https://modao.cc/agent-py/media/generated_images/2026-05-15/642485ffa36c436786bd8e719c771afe.jpg"/>
+<div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#FF8A00] border-2 border-white flex items-center justify-center">
+<iconify-icon class="text-sm text-white" icon="mdi:trending-up"></iconify-icon>
+</div>
+</div>
+<div>
+<h2 class="text-[28px] leading-none font-bold mb-1">小张</h2>
+<p class="text-sm text-gray-400">领养钱多多15天啦</p>
+</div>
+</div>
+<div class="flex items-center gap-6 pt-2">
+<button class="relative flex flex-col items-center text-gray-700 group" onclick="showModal('modal-message-list')">
+<iconify-icon class="text-2xl" icon="mdi:message-text-outline"></iconify-icon>
+<span class="text-xs mt-1">消息</span>
+<span class="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-[#E60113] text-white text-[9px] font-bold flex items-center justify-center">1</span>
+<div class="tooltip-card absolute top-10 right-0 w-36 rounded-xl bg-[#111827] text-white p-3 text-[10px] leading-5 shadow-xl text-left z-20">
+<p class="font-bold mb-1">本周理财周报</p>
+<p>新鲜出炉，点开看看你这周的攒钱表现。</p>
+</div>
+</button>
+<button class="flex flex-col items-center text-gray-700">
+<iconify-icon class="text-2xl" icon="mdi:cog-outline"></iconify-icon>
+<span class="text-xs mt-1">设置</span>
+</button>
+</div>
+</div>
+<div class="border-t border-[#F1E5D5] pt-4">
+<p class="text-sm font-bold mb-3">我的资产</p>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-white rounded-2xl p-4 shadow-sm border border-[#F5E7D5] asset-stat-card">
+<p class="asset-stat-label">余额 (元)</p>
+<div class="asset-stat-row">
+<div class="asset-stat-content">
+<p class="asset-stat-value" style="font-size: 16px;" data-value="2508.80">2508.80</p>
+</div>
+<div class="asset-stat-icon">￥</div>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-4 shadow-sm border border-[#F5E7D5] asset-stat-card">
+<p class="asset-stat-label">本月可支配资金剩</p>
+<div class="asset-stat-row">
+<div class="asset-stat-content">
+<p class="asset-stat-value" style="font-size: 16px;" data-value="398">398</p>
+</div>
+<div class="asset-stat-icon">￥</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-[26px] p-5 shadow-sm mb-4 border border-gray-100">
+<div class="flex items-center gap-2 mb-4">
+<div class="w-10 h-10 rounded-2xl bg-[#FFF4E8] flex items-center justify-center text-[#FF8A00]">
+<iconify-icon class="text-xl" icon="mdi:account-star-outline"></iconify-icon>
+</div>
+<div>
+<p class="text-sm font-bold">我的人设是。。。</p>
+<p class="text-[11px] text-gray-400 mt-1">根据近期消费和理财行为动态生成</p>
+</div>
+</div>
+<div class="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#FFF8EE] via-white to-[#F4F9FF] border border-[#F5E7D5] px-4 py-4">
+<div class="w-12 h-12 rounded-2xl bg-[#EAF5FF] text-[#3B82F6] flex items-center justify-center shrink-0">
+<iconify-icon class="text-2xl" icon="mdi:shield-star-outline"></iconify-icon>
+</div>
+<div class="min-w-0">
+<p class="text-[10px] uppercase tracking-wide text-[#FF8A00] font-bold">理财画像</p>
+<p class="text-[17px] font-bold text-gray-800 leading-6">我的理财风格稳健性理财新手</p>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-[26px] p-5 shadow-sm mb-4 border border-gray-100">
+<div class="relative inline-block group mb-5">
+<p class="text-sm font-bold">攒钱计划板块</p>
+<div class="tooltip-card absolute left-0 top-7 w-[250px] rounded-2xl bg-white shadow-xl border border-[#F5E7D5] p-3 z-20">
+<div class="flex items-center gap-3">
+<img alt="钱多多提醒" class="w-20 h-20 object-contain shrink-0" src="D:/WeChat/file/WeChat Files/wxid_r8x4i919q04y21/FileStorage/Temp/1778898683307.png"/>
+<p class="text-[11px] leading-5 text-gray-700">钱多多说：<span class="font-bold text-[#E60113]">快点击看看你的攒钱进度详情吧~</span></p>
+</div>
+</div>
+</div>
+<div class="space-y-6">
+<button class="group w-full text-left" onclick="switchPage('page-goal-xinjiang')">
+<div class="flex justify-between items-center mb-3">
+<p class="font-medium">去新疆旅游资金</p>
+<span class="text-lg font-bold text-gray-700">75%</span>
+</div>
+<div class="h-2 w-full rounded-full bg-gray-100 overflow-hidden mb-2">
+<div class="h-full bg-[#FFC82C]" style="width: 75%;"></div>
+</div>
+<p class="text-[11px] text-gray-400 group-hover:text-[#E60113] transition-colors">距离实现还差约 45 天，悬停可看详情</p>
+<div class="tooltip-card mt-2 rounded-xl bg-[#111827] text-white p-3 text-[10px] leading-5 shadow-xl">
+<p class="font-bold mb-1">新疆旅行计划</p>
+<p>目标金额 ¥6,000，已存 ¥4,500。按照当前节奏，预计 <span class="text-[#FBBF24] font-bold">45 天后</span>出发。</p>
+</div>
+</button>
+<button class="group w-full text-left" onclick="switchPage('page-goal')">
+<div class="flex justify-between items-center mb-3">
+<p class="font-medium">买一台 macbook air</p>
+<span class="text-lg font-bold text-gray-700">0%</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="h-2 flex-1 rounded-full bg-gray-100 overflow-hidden">
+<div class="h-full bg-[#10B981]" style="width: 1%;"></div>
+</div>
+<div class="w-11 h-7 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400">
+<iconify-icon class="text-sm" icon="mdi:flash-outline"></iconify-icon>
+</div>
+</div>
+<p class="text-[11px] text-gray-400 mt-2 group-hover:text-[#E60113] transition-colors">还未正式开始，点开补完目标细节</p>
+<div class="tooltip-card mt-2 rounded-xl bg-[#111827] text-white p-3 text-[10px] leading-5 shadow-xl">
+<p class="font-bold mb-1">MacBook 计划</p>
+<p>当前进度接近 0%，如果本月开始执行，预计 <span class="text-[#34D399] font-bold">12 个月</span> 达成。</p>
+</div>
+</button>
+</div>
+</div>
+<div class="bg-white rounded-2xl overflow-hidden shadow-sm mb-4">
+<div class="p-4 flex items-center justify-between border-b border-gray-50">
+<div class="flex items-center gap-3">
+<iconify-icon class="text-gray-400" icon="mdi:bank-outline"></iconify-icon>
+<span class="text-sm">我的银行卡</span>
+</div>
+<iconify-icon class="text-gray-300" icon="mdi:chevron-right"></iconify-icon>
+</div>
+<div class="p-4 flex items-center justify-between border-b border-gray-50">
+<div class="flex items-center gap-3">
+<iconify-icon class="text-gray-400" icon="mdi:cog-outline"></iconify-icon>
+<span class="text-sm">系统设置</span>
+</div>
+<iconify-icon class="text-gray-300" icon="mdi:chevron-right"></iconify-icon>
+</div>
+<div class="p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<iconify-icon class="text-gray-400" icon="mdi:help-circle-outline"></iconify-icon>
+<span class="text-sm">帮助与反馈</span>
+</div>
+<iconify-icon class="text-gray-300" icon="mdi:chevron-right"></iconify-icon>
+</div>
+</div>
+<button class="w-full bg-white text-gray-400 py-4 rounded-2xl text-sm font-bold shadow-sm">退出登录</button>
+</div>
+</div>
+</div>
+<!-- 底部导航栏 -->
+<div class="absolute bottom-4 left-3 right-3 h-20 bg-white/95 backdrop-blur-md border border-gray-100 rounded-[26px] flex items-center justify-around px-2 z-40 shadow-[0_10px_30px_rgba(15,23,42,0.12)]">
+<button class="flex flex-col items-center gap-1 tab-inactive" onclick="toggleAIChat()">
+<div class="w-12 h-12 bg-[#E60113] rounded-full flex items-center justify-center -mt-10 shadow-lg shadow-[#E60113]/40 border-4 border-white overflow-hidden leading-none">
+<img alt="钱多多头像" class="block w-8 h-8 object-contain"  style="transform: translateY(17%);" src="./素材/二维logo头像.png"/>
+</div>
+<span class="text-[10px] font-bold">钱多多</span>
+</button>
+<button class="flex flex-col items-center gap-1 tab-active" id="nav-spend" onclick="switchTab('spend')">
+<iconify-icon class="text-2xl" icon="mdi:wallet"></iconify-icon>
+<span class="text-[10px] font-bold">花前钱</span>
+</button>
+<button class="flex flex-col items-center gap-1 tab-inactive" id="nav-invest" onclick="switchTab('invest')">
+<iconify-icon class="text-2xl" icon="mdi:trending-up"></iconify-icon>
+<span class="text-[10px] font-bold">钱生钱</span>
+</button>
+<button class="flex flex-col items-center gap-1 tab-inactive" id="nav-awards" onclick="switchTab('awards')">
+<iconify-icon class="text-2xl" icon="mdi:trophy-outline"></iconify-icon>
+<span class="text-[10px] font-bold">我真棒</span>
+</button>
+<button class="flex flex-col items-center gap-1 tab-inactive" id="nav-profile" onclick="switchTab('profile')">
+<iconify-icon class="text-2xl" icon="mdi:account-outline"></iconify-icon>
+<span class="text-[10px] font-bold">我的</span>
+</button>
+</div>
+<!-- AI 对话侧边栏 (抽屉) -->
+<div class="absolute inset-0 bg-black/40 z-50 hide opacity-0 transition-opacity duration-300" id="ai-chat-drawer" onclick="toggleAIChat()">
+<div class="absolute top-0 left-0 w-4/5 h-full bg-white shadow-2xl transition-transform duration-300 -translate-x-full flex flex-col" onclick="event.stopPropagation()">
+<div class="p-6 bg-[#E60113] text-white flex items-center gap-3">
+<div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+<img alt="钱多多头像" class="w-full h-full object-cover rounded-full" src="./素材/二维logo头像.png"/>
+</div>
+<div>
+<p class="font-bold">钱多多 AI</p>
+<p class="text-[10px] opacity-80">理财陪伴顾问 · 在线</p>
+</div>
+</div>
+<div class="flex-1 p-4 space-y-4 overflow-y-auto">
+<div class="flex gap-2">
+<div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center shrink-0 overflow-hidden">
+<img alt="钱多多头像" class="w-full h-full object-cover" src="./素材/二维logo头像.png"/>
+</div>
+<div class="bg-gray-100 p-3 rounded-2xl rounded-tl-none text-xs leading-relaxed max-w-[85%]">
+                                    嗨！我是你的钱多多。今天已经帮你省下了 ¥45 块钱，相当于两杯奶茶哦！继续加油！有什么我可以帮你的吗？
+                                </div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<div class="bg-[#E60113] text-white p-3 rounded-2xl rounded-tr-none text-xs leading-relaxed max-w-[85%]">
+                                    我想看看我的理财方案效果如何？
+                                </div>
+</div>
+<div class="flex gap-2">
+<div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center shrink-0 overflow-hidden">
+<img alt="钱多多头像" class="w-full h-full object-cover" src="./素材/二维logo头像.png"/>
+</div>
+<div class="bg-gray-100 p-3 rounded-2xl rounded-tl-none text-xs leading-relaxed max-w-[85%]">
+                                    没问题！根据最近15天的数据，你的「生活成本」控制得非常好，实际支出比预期低了 12%。建议将省下的 ¥300 块转入「钱生钱」的货基组合，预计下月能多赚 ¥2.5。要现在操作吗？
+                                </div>
+</div>
+<div class="space-y-3">
+<button class="feature-link-card primary" onclick="showModal('modal-feature-prepay'); toggleAIChat();">
+<div class="w-10 h-10 rounded-2xl bg-[#E60113]/10 text-[#E60113] flex items-center justify-center shrink-0">
+<iconify-icon class="text-xl" icon="mdi:shield-alert-outline"></iconify-icon>
+</div>
+<div class="min-w-0">
+<p class="text-xs font-bold text-gray-900">场景A：花前消费决策预警</p>
+<p class="text-[10px] text-gray-500 leading-5 mt-1">大额非必要消费付款时，3 秒分析后弹出风险分析卡片并给出三套优化方案。</p>
+</div>
+</button>
+<button class="feature-link-card" onclick="showModal('modal-hotspot-scene'); toggleAIChat();">
+<div class="w-10 h-10 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center shrink-0">
+<iconify-icon class="text-xl" icon="mdi:bell-badge-outline"></iconify-icon>
+</div>
+<div class="min-w-0">
+<p class="text-xs font-bold text-gray-900">场景B：AI主动热点识别推荐</p>
+<p class="text-[10px] text-gray-500 leading-5 mt-1">先进入仿系统通知界面高亮热点消息，再点开进入 AI 解读弹窗。</p>
+</div>
+</button>
+<button class="feature-link-card" onclick="showModal('modal-weekly-report'); toggleAIChat();">
+<div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
+<iconify-icon class="text-xl" icon="mdi:file-chart-outline"></iconify-icon>
+</div>
+<div class="min-w-0">
+<p class="text-xs font-bold text-gray-900">本周消费周报总结</p>
+<p class="text-[10px] text-gray-500 leading-5 mt-1">自动汇总历史消费记录、波动趋势和攒钱计划影响。</p>
+</div>
+</button>
+<button class="feature-link-card" onclick="openInvestmentAgent('dca-guide'); toggleAIChat();">
+<div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
+<iconify-icon class="text-xl" icon="mdi:chart-donut"></iconify-icon>
+</div>
+<div class="min-w-0">
+<p class="text-xs font-bold text-gray-900">理财新手产品导航</p>
+<p class="text-[10px] text-gray-500 leading-5 mt-1">根据你的画像推荐入门产品链接和定投学习入口。</p>
+</div>
+</button>
+</div>
+</div>
+<div class="p-4 pb-8 border-t border-gray-100">
+<div class="grid grid-cols-2 gap-2 mb-4">
+<button class="text-[10px] bg-gray-50 p-2 rounded-lg text-gray-500 border border-gray-100">今天需要省钱吗？</button>
+<button class="text-[10px] bg-gray-50 p-2 rounded-lg text-gray-500 border border-gray-100">理财新手怎么做？</button>
+</div>
+<div class="flex gap-2">
+<input class="flex-1 bg-gray-100 border-none rounded-xl px-4 py-2 text-xs focus:ring-1 focus:ring-[#E60113]" placeholder="问问钱多多..." type="text"/>
+<button class="bg-[#E60113] text-white p-2 rounded-xl">
+<iconify-icon class="text-xl" icon="mdi:send"></iconify-icon>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. 攒钱目标详情页 -->
+<section class="h-full flex flex-col hide bg-[#F3F4F6] animate-fade-in" id="page-goal">
+<div class="p-6 bg-white flex items-center gap-4">
+<button class="text-gray-400" onclick="switchPage('page-main')">
+<iconify-icon class="text-2xl" icon="mdi:chevron-left"></iconify-icon>
+</button>
+<h2 class="text-lg font-bold">我的攒钱目标</h2>
+</div>
+<div class="flex-1 scroll-container p-6 space-y-6">
+<div class="bg-white p-6 rounded-3xl shadow-sm space-y-4">
+<div>
+<label class="text-[10px] text-gray-400 font-bold uppercase">目标名称</label>
+<input class="w-full border-b border-gray-100 py-2 font-bold focus:outline-none focus:border-[#E60113]" type="text" value="买一台 MacBook Air"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="text-[10px] text-gray-400 font-bold uppercase">目标金额 (元)</label>
+<input class="w-full border-b border-gray-100 py-2 font-bold focus:outline-none focus:border-[#E60113]" type="number" value="8000"/>
+</div>
+<div>
+<label class="text-[10px] text-gray-400 font-bold uppercase">达成期限 (月)</label>
+<input class="w-full border-b border-gray-100 py-2 font-bold focus:outline-none focus:border-[#E60113]" type="number" value="12"/>
+</div>
+</div>
+</div>
+<div class="bg-[#E60113] p-6 rounded-3xl text-white shadow-lg">
+<h3 class="text-sm font-bold opacity-80 mb-4">AI 自动拆解建议</h3>
+<div class="grid grid-cols-2 gap-6">
+<div>
+<p class="text-[10px] opacity-70">月均需存</p>
+<p class="text-2xl font-bold">¥ 667</p>
+</div>
+<div>
+<p class="text-[10px] opacity-70">日均需存</p>
+<p class="text-2xl font-bold">¥ 22.2</p>
+</div>
+</div>
+<div class="mt-6 p-4 bg-white/10 rounded-2xl">
+<div class="flex items-center gap-2 mb-2">
+<iconify-icon class="text-[#FFD700]" icon="mdi:lightbulb-on"></iconify-icon>
+<span class="text-xs font-bold">资金缺口诊断</span>
+</div>
+<p class="text-[10px] leading-relaxed opacity-90">按当前消费习惯，每月缺口约 ¥150。建议开启「节流模式」，每日减少一杯奶茶支出即可达成。</p>
+</div>
+</div>
+<div class="space-y-4">
+<h3 class="font-bold">里程碑计划</h3>
+<div class="relative pl-6 border-l-2 border-gray-200 space-y-8">
+<div class="relative">
+<div class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-[#10B981] border-4 border-white"></div>
+<p class="text-xs font-bold text-gray-800">达成 25% (¥2,000)</p>
+<p class="text-[10px] text-gray-400">预计：2026年8月</p>
+</div>
+<div class="relative">
+<div class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-gray-300 border-4 border-white"></div>
+<p class="text-xs font-bold text-gray-400">达成 50% (¥4,000)</p>
+<p class="text-[10px] text-gray-400">预计：2026年11月</p>
+</div>
+<div class="relative">
+<div class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-gray-300 border-4 border-white"></div>
+<p class="text-xs font-bold text-gray-400">达成 100% (¥8,000)</p>
+<p class="text-[10px] text-gray-400">预计：2027年5月</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 pb-8 bg-white">
+<button class="w-full bg-[#E60113] text-white py-4 rounded-xl font-bold shadow-lg" onclick="switchPage('page-main')">
+                        开始攒钱
+                    </button>
+</div>
+</section>
+<!-- 7. AI 投资配置页 -->
+<section class="h-full flex flex-col hide bg-[#F3F4F6] animate-fade-in" id="page-portfolio">
+<div class="p-6 bg-white flex items-center gap-4">
+<button class="text-gray-400" onclick="switchTab('invest')">
+<iconify-icon class="text-2xl" icon="mdi:chevron-left"></iconify-icon>
+</button>
+<h2 class="text-lg font-bold">AI 智能组合配置</h2>
+</div>
+<div class="flex-1 scroll-container p-6 space-y-6">
+<div class="bg-white p-6 rounded-3xl shadow-sm">
+<p class="text-xs text-gray-400 mb-1">每月可投资预算</p>
+<p class="text-3xl font-bold text-[#E60113]">¥ 500.00</p>
+</div>
+<div class="bg-white p-6 rounded-3xl shadow-sm">
+<h3 class="font-bold mb-6">AI 新手推荐组合</h3>
+<div class="flex justify-center mb-6">
+<!-- 模拟饼图 -->
+<div class="w-40 h-40 rounded-full border-[20px] border-[#E60113] border-l-[#FFD700] border-b-[#10B981] flex items-center justify-center">
+<div class="text-center">
+<p class="text-[10px] text-gray-400">预期年化</p>
+<p class="text-lg font-bold text-[#10B981]">3.5~5.2%</p>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-[#E60113]"></div>
+<span class="text-xs font-bold">活期存款 (招行朝朝宝)</span>
+</div>
+<span class="text-xs font-bold">50%</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-[#FFD700]"></div>
+<span class="text-xs font-bold">稳健债券基金</span>
+</div>
+<span class="text-xs font-bold">35%</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-[#10B981]"></div>
+<span class="text-xs font-bold">指数成长基金</span>
+</div>
+<span class="text-xs font-bold">15%</span>
+</div>
+</div>
+</div>
+<div class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+<div class="flex items-center gap-2 mb-2">
+<iconify-icon class="text-blue-500" icon="mdi:information-outline"></iconify-icon>
+<span class="text-xs font-bold text-blue-500">配置逻辑说明</span>
+</div>
+<p class="text-[10px] text-blue-700 leading-relaxed">
+                            考虑到您属于「稳健型理财新手」，我们优先保证 50% 的高流动性资金，并配置 35% 的债基平滑波动，最后用 15% 的股基博取长期超额收益。
+                        </p>
+</div>
+</div>
+<div class="p-4 pb-8 bg-white">
+<button class="w-full bg-[#E60113] text-white py-4 rounded-xl font-bold shadow-lg" onclick="showModal('modal-confirm-invest')">
+                        确认开启智能投顾
+                    </button>
+</div>
+</section>
+<!-- 8. 新疆旅行目标详情页 -->
+<section class="h-full flex flex-col hide bg-[#F3F4F6] animate-fade-in" id="page-goal-xinjiang">
+<div class="p-6 bg-white flex items-center gap-4">
+<button class="text-gray-400" onclick="switchTab('profile')">
+<iconify-icon class="text-2xl" icon="mdi:chevron-left"></iconify-icon>
+</button>
+<h2 class="text-lg font-bold">新疆旅游资金</h2>
+</div>
+<div class="flex-1 scroll-container p-6 space-y-6">
+<div class="bg-white p-6 rounded-3xl shadow-sm space-y-4">
+<div>
+<label class="text-[10px] text-gray-400 font-bold uppercase">目标名称</label>
+<input class="w-full border-b border-gray-100 py-2 font-bold focus:outline-none focus:border-[#E60113]" type="text" value="去新疆旅游资金"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="text-[10px] text-gray-400 font-bold uppercase">目标金额 (元)</label>
+<input class="w-full border-b border-gray-100 py-2 font-bold focus:outline-none focus:border-[#E60113]" type="number" value="6000"/>
+</div>
+<div>
+<label class="text-[10px] text-gray-400 font-bold uppercase">预计出发</label>
+<input class="w-full border-b border-gray-100 py-2 font-bold focus:outline-none focus:border-[#E60113]" type="text" value="2025年暑假"/>
+</div>
+</div>
+</div>
+<div class="bg-[#FF9A1F] p-6 rounded-3xl text-white shadow-lg">
+<h3 class="text-sm font-bold opacity-90 mb-4">AI 出行基金建议</h3>
+<div class="grid grid-cols-2 gap-6">
+<div>
+<p class="text-[10px] opacity-80">当前进度</p>
+<p class="text-2xl font-bold">75%</p>
+</div>
+<div>
+<p class="text-[10px] opacity-80">还差金额</p>
+<p class="text-2xl font-bold">¥ 1,500</p>
+</div>
+</div>
+<div class="mt-6 p-4 bg-white/15 rounded-2xl">
+<div class="flex items-center gap-2 mb-2">
+<iconify-icon class="text-white" icon="mdi:airplane"></iconify-icon>
+<span class="text-xs font-bold">旅行基金拆解</span>
+</div>
+<p class="text-[10px] leading-relaxed opacity-95">按目前攒钱速度，每周再额外存下 ¥350，就能在 45 天后把新疆旅行基金攒够。建议把周末娱乐预算里的 20% 转到这个目标里。</p>
+</div>
+</div>
+<div class="bg-white p-5 rounded-3xl shadow-sm">
+<h3 class="font-bold mb-4">当前预算分配</h3>
+<div class="space-y-4 text-sm">
+<div class="flex items-center justify-between">
+<span>机票 / 火车</span>
+<span class="font-bold">¥ 1,800</span>
+</div>
+<div class="flex items-center justify-between">
+<span>住宿</span>
+<span class="font-bold">¥ 2,000</span>
+</div>
+<div class="flex items-center justify-between">
+<span>餐饮 / 当地交通</span>
+<span class="font-bold">¥ 1,200</span>
+</div>
+<div class="flex items-center justify-between">
+<span>机动预算</span>
+<span class="font-bold">¥ 1,000</span>
+</div>
+ </div>
+</div>
+</div>
+<div class="p-4 pb-8 bg-white">
+<button class="w-full bg-[#E60113] text-white py-4 rounded-xl font-bold shadow-lg" onclick="switchTab('profile')">
+                        返回我的计划
+                    </button>
+</div>
+</section>
+<!-- 通用模态弹窗容器 -->
+<div class="absolute inset-0 bg-black/50 z-[100] hide flex items-center justify-center p-6 animate-fade-in" id="modal-container">
+<!-- 场景A: 消费预警弹窗 -->
+<div class="bg-white rounded-3xl p-6 w-full max-w-xs hide scale-in" id="modal-warning">
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
+<iconify-icon class="text-4xl text-[#EF4444]" icon="mdi:alert-decagram"></iconify-icon>
+</div>
+<h3 class="text-lg font-bold mb-2">高危消费预警！</h3>
+<p class="text-xs text-gray-500 mb-6">识别到一笔 ¥1,299 的电子产品支出，这将使您的「攒钱目标」达成时间推迟 45 天。</p>
+<div class="w-full space-y-3 mb-6">
+<div class="group relative">
+<button class="w-full py-3 bg-gray-100 text-xs font-bold rounded-xl text-gray-700">缓两天再买，冷静一下</button>
+<div class="tooltip-card absolute left-0 right-0 bottom-full mb-2 rounded-xl bg-[#111827] text-white p-3 text-[10px] leading-5 shadow-xl text-left">
+<p class="font-bold mb-1">对攒钱计划的影响</p>
+<p>今晚先不下单，目标完成时间可从推迟 45 天缩短到仅推迟 <span class="text-[#FBBF24] font-bold">5 天</span>。</p>
+</div>
+</div>
+<div class="group relative">
+<button class="w-full py-3 bg-gray-100 text-xs font-bold rounded-xl text-gray-700">寻找同款平价替代</button>
+<div class="tooltip-card absolute left-0 right-0 bottom-full mb-2 rounded-xl bg-[#111827] text-white p-3 text-[10px] leading-5 shadow-xl text-left">
+<p class="font-bold mb-1">对攒钱计划的影响</p>
+<p>如果换成 399 元平替耳机，你的 MacBook 目标可以 <span class="text-[#34D399] font-bold">提前 12 天完成</span>。</p>
+</div>
+</div>
+<div class="group relative">
+<button class="w-full py-3 border border-red-200 text-xs font-bold rounded-xl text-[#EF4444]">依然购买，手动调整计划</button>
+<div class="tooltip-card absolute left-0 right-0 bottom-full mb-2 rounded-xl bg-[#111827] text-white p-3 text-[10px] leading-5 shadow-xl text-left">
+<p class="font-bold mb-1">对攒钱计划的影响</p>
+<p>坚持购买的话，本月攒钱进度会被吃掉一大块，目标大约会 <span class="text-[#F87171] font-bold">推迟 45 天</span>。</p>
+</div>
+</div>
+</div>
+<button class="text-gray-400 text-xs" onclick="closeModal()">先关闭，我再想想</button>
+</div>
+</div>
+<!-- 场景: 人设选择器 (快速演示) -->
+<div class="bg-white rounded-3xl p-6 w-full max-w-xs hide" id="modal-persona">
+<h3 class="text-lg font-bold mb-4">选择您的理财人设</h3>
+<div class="space-y-3">
+<div class="p-4 bg-gray-50 rounded-2xl border-2 border-transparent hover:border-[#E60113] cursor-pointer" onclick="switchPage('page-survey')">
+<p class="font-bold text-sm">大学生小萌</p>
+<p class="text-[10px] text-gray-400">生活费2000，想存钱买相机</p>
+</div>
+<div class="p-4 bg-gray-50 rounded-2xl border-2 border-transparent hover:border-[#E60113] cursor-pointer" onclick="switchPage('page-survey')">
+<p class="font-bold text-sm">职场新人阿强</p>
+<p class="text-[10px] text-gray-400">月入5000，想开始定投基金</p>
+</div>
+<div class="p-4 bg-gray-50 rounded-2xl border-2 border-transparent hover:border-[#E60113] cursor-pointer" onclick="switchPage('page-survey')">
+<p class="font-bold text-sm">月光族美美</p>
+<p class="text-[10px] text-gray-400">收入不低但存不下钱，急需监护</p>
+</div>
+</div>
+<button class="w-full mt-6 py-3 text-gray-400 text-xs" onclick="closeModal()">取消</button>
+</div>
+<div class="bg-white backdrop-blur-xl rounded-[28px] p-6 w-full max-w-sm hide shadow-2xl border border-white/70" id="modal-weekly-report">
+<div class="flex items-start justify-between gap-4 mb-4">
+<div>
+<p class="text-lg font-bold">本周消费报告 · 新鲜出炉~</p>
+<p class="text-xs text-gray-400 mt-1">钱多多根据最近 7 天支出趋势做了个小结</p>
+</div>
+<button class="text-gray-400" onclick="closeModal()">
+<iconify-icon class="text-xl" icon="mdi:close"></iconify-icon>
+</button>
+</div>
+<div class="bg-white/85 rounded-2xl p-4 mb-4 shadow-sm">
+<p class="text-xs font-bold text-gray-900 mb-2">趋势总结——这周冲动消费了！！</p>
+<p class="text-[11px] leading-6 text-gray-600">周一到周四消费稳定在 <span class="font-bold text-gray-900">50 元左右</span>，属于<span class="font-bold text-[#10B981]">正常工作日开销</span>。周五因为淘宝 520 活动，<span class="font-bold text-[#E60113]">冲动购入 1299 元耳机</span>，导致本周消费峰值明显抬升。周六和周日预计各花费 <span class="font-bold text-gray-900">80 到 100 元</span>，主要来自<span class="font-bold text-[#F59E0B]">聚餐和出行</span>。</p>
+</div>
+<div class="bg-[#E60113]/6 rounded-2xl p-4 mb-4">
+<p class="text-xs font-bold text-[#E60113] mb-2">钱多多建议</p>
+<ul class="text-[11px] text-gray-700 leading-5 space-y-1">
+<li><span class="font-bold text-[#E60113]">购物支出偏高</span>，建议下周设置 300 元购物上限。</li>
+<li><span class="font-bold text-[#10B981]">餐饮和交通控制不错</span>，继续保持工作日稳定节奏。</li>
+<li>如果周末聚餐不超预算，本月仍有机会<span class="font-bold text-[#E60113]">多存 850 元</span>。</li>
+</ul>
+</div>
+<div class="rounded-[24px] bg-gradient-to-r from-[#EEF6FF] via-white to-[#FFF8EA] border border-[#D9E8FF] p-3 flex items-center gap-3">
+<div class="flex-1 min-w-0 rounded-[18px] bg-white/80 px-4 py-3 shadow-sm">
+<p class="text-[11px] leading-6 text-gray-700">多多说：<span class="font-bold text-[#E60113]">下周可不能这样了</span>，耳机是好耳机，但攒钱计划也得顾着点。</p>
+</div>
+<div class="w-28 h-28 rounded-[22px] bg-white shadow-md flex items-center justify-center overflow-hidden shrink-0">
+<img alt="钱多多提醒" class="w-full h-full object-cover object-center" src="./素材/不可以.png"/>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-[28px] p-5 w-full max-w-sm hide shadow-2xl border border-gray-100" id="modal-feature-prepay">
+<div class="flex items-start justify-between gap-4 mb-4">
+<div>
+<p class="text-lg font-bold">场景A · 花前消费决策预警</p>
+<p class="text-xs text-gray-400 mt-1">日常高频触发 · 非必要大额消费拦截</p>
+</div>
+<button class="text-gray-400" onclick="closeModal()">
+<iconify-icon class="text-xl" icon="mdi:close"></iconify-icon>
+</button>
+</div>
+<div class="rounded-[24px] overflow-hidden border border-[#E5E7EB] shadow-sm mb-4">
+<div class="relative">
+<img alt="待付款拦截场景" class="w-full h-[278px] object-cover object-top" src="D:/WeChat/file/WeChat Files/wxid_r8x4i919q04y21/FileStorage/Temp/ee2f90f4798b2e4e9b35cc11be611cd.jpg"/>
+<div class="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/15"></div>
+<div class="absolute inset-x-3 top-3 rounded-2xl bg-[#E60113]/92 text-white px-3 py-3 shadow-lg">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-2xl bg-white/15 flex items-center justify-center shrink-0">
+<iconify-icon class="text-xl" icon="mdi:shield-alert-outline"></iconify-icon>
+</div>
+<div>
+<p class="text-sm font-bold" style="color: red;">钱多多已识别到高危消费场景</p>
+<p class="text-[11px] leading-5 text-white/85 mt-1">当前付款页为非必要消费，且本月可支配资金紧张，建议先完成 AI 风险分析。</p>
+<div class="flex flex-wrap gap-2 mt-2">
+<span class="px-2 py-1 rounded-full bg-white/14 text-[10px] font-bold">月度资金不足</span>
+<span class="px-2 py-1 rounded-full bg-[#F59E0B]/90 text-[10px] font-bold">黄色预警</span>
+<span class="px-2 py-1 rounded-full bg-white/14 text-[10px] font-bold">模型玩具 / 兴趣消费</span>
+ </div>
+ </div>
+ </div>
+ </div>
+<div class="absolute bottom-3 right-3 left-3">
+<button class="w-full rounded-2xl bg-white/96 backdrop-blur-sm text-[#E60113] py-3 text-sm font-bold shadow-md" onclick="startSpendInterception()">钱多多先帮我分析一下</button>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3 text-[11px]">
+<div class="rounded-2xl bg-gray-50 border border-gray-100 p-3">
+<p class="text-gray-400 mb-1">触发条件</p>
+<p class="font-bold text-gray-800 leading-5">打开大额非必要消费付款界面</p>
+</div>
+<div class="rounded-2xl bg-gray-50 border border-gray-100 p-3">
+<p class="text-gray-400 mb-1">后续动作</p>
+<p class="font-bold text-gray-800 leading-5">3 秒加载后弹出风险分析卡片</p>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-[28px] p-5 w-full max-w-sm hide shadow-2xl border border-gray-100" id="modal-feature-loading">
+<div class="flex flex-col items-center justify-center text-center py-10">
+<div class="w-16 h-16 rounded-full border-4 border-[#FEE2E2] border-t-[#E60113] animate-spin mb-5"></div>
+<p class="text-lg font-bold mb-2">钱多多正在分析这笔消费</p>
+<p class="text-xs text-gray-500 leading-6 max-w-[240px]">正在检测消费分类、历史消费记录、当前现金流和攒钱目标影响，请稍等 3 秒。</p>
+</div>
+</div>
+<div class="w-full max-w-sm h-[700px] hide shadow-2xl rounded-[32px] overflow-hidden scale-in notification-scene-shell" id="modal-hotspot-scene">
+<div class="px-6 pt-5 pb-4">
+<div class="flex items-center justify-between text-white/95 text-sm font-semibold">
+<span>17:20</span>
+<div class="flex items-center gap-2 text-base">
+<iconify-icon icon="mdi:signal"></iconify-icon>
+<iconify-icon icon="mdi:wifi"></iconify-icon>
+<iconify-icon icon="mdi:battery"></iconify-icon>
+</div>
+</div>
+<div class="mt-8 flex items-start justify-between">
+<div>
+<p class="text-[58px] leading-none font-bold tracking-tight">17:20</p>
+<p class="text-[22px] leading-8 font-semibold mt-3">5月16日</p>
+<p class="text-[22px] leading-8 font-semibold">星期六</p>
+</div>
+<button class="text-white/80 pt-2" onclick="closeModal()">
+<iconify-icon class="text-2xl" icon="mdi:close"></iconify-icon>
+</button>
+</div>
+</div>
+<div class="px-4 pb-5 space-y-4">
+<div class="notification-card">
+<div class="flex items-start gap-3">
+<div class="w-12 h-12 rounded-2xl overflow-hidden bg-white/10 shrink-0">
+<img alt="钱多多形象" class="w-full h-full object-cover" src="./素材/钱多多ip正面.png"/>
+</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between gap-2 text-white/75">
+<p class="text-[14px] font-medium truncate">钱多多 AI 热点雷达 / 刚刚</p>
+<span class="px-2.5 py-1 rounded-full bg-white/10 text-[10px] font-bold">系统驱动</span>
+</div>
+<p class="text-[24px] leading-9 font-bold mt-4 text-[#FFE37A]">普京访华</p>
+<p class="text-[24px] leading-9 font-bold">可能带来油气能源板块利好</p>
+<p class="text-[16px] leading-7 text-white/88 mt-3">钱多多说：该事件或提升市场对资源合作与能源链的关注，已结合你的风险等级与资金安排生成专属分析。</p>
+<button class="mt-5 w-full rounded-2xl bg-white text-[#1E1B4B] py-3 text-sm font-bold shadow-md" onclick="openInvestmentAgent('hotspot-alert')">点击查看 AI 解读弹窗</button>
+</div>
+</div>
+</div>
+<div class="rounded-[26px] bg-white/12 px-4 py-4 text-white/86 backdrop-blur-sm">
+<div class="flex items-center justify-between text-[12px]">
+<span>热点通知预览</span>
+<span>系统已完成初筛</span>
+</div>
+<div class="mt-3 space-y-3 text-[13px] leading-6">
+<div class="rounded-2xl bg-black/20 px-4 py-3">外交事件催化资源合作预期，能源、油服、上游资源链关注度抬升。</div>
+<div class="rounded-2xl bg-black/20 px-4 py-3">钱多多已为你准备：热点解读、机会与风险分析、基金产品对比、止盈止损提醒。</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-[28px] p-5 w-full max-w-sm hide shadow-2xl border border-gray-100 modal-analysis-shell" id="modal-feature-analysis">
+<div class="flex items-start justify-between gap-4 mb-4 shrink-0">
+<div>
+<p class="text-lg font-bold">风险分析卡片</p>
+<p class="text-xs text-gray-400 mt-1">花前消费决策预警已拦截继续付款</p>
+</div>
+<button class="text-gray-400" onclick="closeModal()">
+<iconify-icon class="text-xl" icon="mdi:close"></iconify-icon>
+</button>
+</div>
+<div class="modal-analysis-body">
+<div class="rounded-[22px] overflow-hidden border border-[#F3D3D7] mb-4">
+<img alt="待付款拦截场景" class="w-full h-40 object-cover object-top" src="D:/WeChat/file/WeChat Files/wxid_r8x4i919q04y21/FileStorage/Temp/ee2f90f4798b2e4e9b35cc11be611cd.jpg"/>
+</div>
+<div class="grid grid-cols-2 gap-3 mb-4">
+<div class="rounded-2xl bg-[#FFF6F6] border border-[#FDE2E2] p-3">
+<p class="text-[10px] text-gray-400 mb-1">消费分类</p>
+<p class="text-sm font-bold text-gray-900">兴趣收藏 / 潮玩模型</p>
+<p class="text-[10px] text-[#E60113] mt-1">非必要消费</p>
+</div>
+<div class="rounded-2xl bg-[#FFFBEB] border border-[#FDE68A] p-3">
+<p class="text-[10px] text-gray-400 mb-1">风险等级</p>
+<p class="text-sm font-bold text-[#B45309]">黄色预警</p>
+<p class="text-[10px] text-gray-500 mt-1">本月预算余量偏紧</p>
+</div>
+</div>
+<div class="rounded-2xl bg-gray-50 border border-gray-100 p-4 mb-4">
+<div class="flex items-center justify-between text-[11px] mb-2">
+<span class="text-gray-400">历史同类消费记录</span>
+<span class="font-bold text-gray-800">近 30 天 4 次</span>
+</div>
+<div class="flex items-center justify-between text-[11px] mb-2">
+<span class="text-gray-400">当前现金流测算</span>
+<span class="font-bold text-[#E60113]">支付后仅剩 ¥313</span>
+</div>
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-gray-400">关联攒钱目标影响</span>
+<span class="font-bold text-gray-800">MacBook 目标延后 5 天</span>
+</div>
+</div>
+<div class="space-y-3 pb-2">
+<div class="rounded-2xl border border-[#FDE2E2] bg-[#FFF6F6] p-3">
+<div class="flex items-center justify-between mb-1">
+<p class="text-[11px] font-bold text-[#E60113]">方案一 · 冷静 48 小时</p>
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-[#E60113]/10 text-[#E60113] font-bold">推荐</span>
+</div>
+<p class="text-[11px] text-gray-600 leading-5">先收藏不付款，消费后自动追踪满意度，若两天后仍想买再提醒你。</p>
+</div>
+<div class="rounded-2xl border border-[#FDE68A] bg-[#FFFBEB] p-3">
+<p class="text-[11px] font-bold text-[#B45309] mb-1">方案二 · 换平替版本</p>
+<p class="text-[11px] text-gray-600 leading-5">改买 59 元基础款，保留兴趣消费但不破坏本月预算。</p>
+</div>
+<div class="rounded-2xl border border-[#D1FAE5] bg-[#F0FDF4] p-3">
+<p class="text-[11px] font-bold text-[#047857] mb-1">方案三 · 继续支付并同步调计划</p>
+<p class="text-[11px] text-gray-600 leading-5">允许本次付款，钱多多自动下调本周娱乐预算并追踪满意度。</p>
+</div>
+</div>
+</div>
+<div class="modal-analysis-footer shrink-0">
+<div class="grid grid-cols-3 gap-2">
+<button class="py-3 rounded-xl bg-[#E60113] text-white text-[11px] font-bold" onclick="simulateInterceptionChoice('已帮你暂缓 48 小时，并开启满意度追踪。')">先缓两天</button>
+<button class="py-3 rounded-xl bg-[#FFFBEB] text-[#B45309] text-[11px] font-bold border border-[#FDE68A]" onclick="simulateInterceptionChoice('已记录你倾向平替版本，并保留比价提醒。')">看平替</button>
+<button class="py-3 rounded-xl bg-gray-100 text-gray-600 text-[11px] font-bold" onclick="simulateInterceptionChoice('已允许付款，并同步调整你的攒钱计划。')">继续支付</button>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-[28px] p-5 w-full max-w-sm hide shadow-2xl" id="modal-message-list">
+<div class="flex items-center justify-between mb-5">
+<div>
+<p class="text-lg font-bold">消息</p>
+<p class="text-xs text-gray-400 mt-1">你有 1 条新的理财提醒</p>
+</div>
+<button class="text-gray-400" onclick="closeModal()">
+<iconify-icon class="text-xl" icon="mdi:close"></iconify-icon>
+</button>
+</div>
+<button class="w-full text-left rounded-2xl border border-[#F5E7D5] bg-gradient-to-r from-[#FFF7EF] to-white p-4 shadow-sm" onclick="showModal('modal-weekly-report')">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-2xl bg-[#E60113]/10 text-[#E60113] flex items-center justify-center shrink-0">
+<iconify-icon class="text-xl" icon="mdi:file-chart-outline"></iconify-icon>
+</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between gap-3">
+<p class="text-sm font-bold text-gray-900">本周理财周报</p>
+<span class="text-[10px] text-gray-400 shrink-0">刚刚</span>
+</div>
+<p class="text-[11px] text-gray-500 leading-5 mt-1">新鲜出炉，点开看看你这周的攒钱表现。</p>
+</div>
+</div>
+</button>
+</div>
+<div class="bg-white rounded-[28px] p-5 w-full max-w-sm hide shadow-2xl modal-analysis-shell" id="modal-invest-agent">
+<div class="flex items-start justify-between gap-4 mb-4 shrink-0">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-2xl overflow-hidden bg-[#FFF3E0] flex items-center justify-center">
+<img alt="钱多多头像" class="w-8 h-8 object-contain" src="./素材/二维logo头像.png"/>
+</div>
+<div>
+<p class="text-base font-bold">钱多多投资助理</p>
+<p class="text-[10px] text-[#10B981] mt-1">在线解读热点</p>
+</div>
+</div>
+<button class="text-gray-400" onclick="closeModal()">
+<iconify-icon class="text-xl" icon="mdi:close"></iconify-icon>
+</button>
+</div>
+<div class="space-y-3 modal-analysis-body">
+<div class="flex justify-end">
+<div class="max-w-[84%] rounded-2xl rounded-br-md bg-[#E60113] px-4 py-3 text-xs text-white leading-6" id="invest-agent-user-message"></div>
+</div>
+<div class="flex gap-2">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-[#FFF3E0] flex items-center justify-center shrink-0 mt-1">
+<img alt="钱多多头像" class="w-6 h-6 object-contain" src="./素材/二维logo头像.png"/>
+</div>
+<div class="max-w-[86%] rounded-2xl rounded-tl-md bg-gray-50 px-4 py-3 text-[11px] text-gray-700 leading-6 border border-gray-100">
+<p id="invest-agent-reply"></p>
+<div class="mt-3 space-y-2" id="invest-agent-links"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-[28px] p-5 w-full max-w-sm hide shadow-2xl" id="modal-invite-friends">
+<div class="text-center">
+<div class="w-16 h-16 rounded-full bg-[#FFF4E8] text-[#FF8A00] flex items-center justify-center mx-auto mb-4">
+<iconify-icon class="text-4xl" icon="mdi:account-multiple-plus-outline"></iconify-icon>
+</div>
+<h3 class="text-lg font-bold mb-2">邀请好友组队攒钱</h3>
+<p class="text-xs text-gray-500 leading-6 mb-5">已为你生成一张组队邀请卡，发给好友后可以一起挑战本月储蓄目标。</p>
+<div class="rounded-3xl bg-gradient-to-br from-[#FFF8EE] via-white to-[#FFF0F0] border border-[#F5E7D5] p-4 text-left mb-5">
+<div class="flex items-center justify-between mb-3">
+<p class="text-sm font-bold">本月组队挑战</p>
+<span class="text-[10px] px-2 py-1 rounded-full bg-[#E60113]/10 text-[#E60113] font-bold">待分享</span>
+</div>
+<p class="text-[12px] text-gray-600 leading-6">目标：一起多攒 ¥3,000，谁先连续 7 天不乱花钱，谁就是队长。</p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="py-3 rounded-xl bg-[#E60113] text-white text-sm font-bold" onclick="simulateInviteSuccess()">微信邀请</button>
+<button class="py-3 rounded-xl bg-gray-100 text-gray-500 text-sm font-bold" onclick="closeModal()">稍后再说</button>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-[28px] p-5 w-full max-w-sm hide shadow-2xl border border-gray-100" id="modal-badges-more">
+<div class="flex items-center justify-between mb-5">
+<div>
+<p class="text-lg font-bold">更多勋章</p>
+<p class="text-xs text-gray-400 mt-1">已解锁 3 枚，继续完成任务可获得更多称号</p>
+</div>
+<button class="text-gray-400" onclick="closeModal()">
+<iconify-icon class="text-xl" icon="mdi:close"></iconify-icon>
+</button>
+</div>
+<div class="space-y-3 text-[11px]">
+<div class="rounded-2xl border border-[#FDE68A] bg-[#FFFBEB] p-4">
+<p class="font-bold text-gray-900">攒钱王者</p>
+<p class="text-gray-500 mt-1 leading-5">连续 30 天存钱打卡即可点亮，解锁后可获得专属存钱加速提醒。</p>
+</div>
+<div class="rounded-2xl border border-[#D1FAE5] bg-[#F0FDF4] p-4">
+<p class="font-bold text-gray-900">复利大师</p>
+<p class="text-gray-500 mt-1 leading-5">完成首次基金定投并连续持有 90 天，钱多多会自动生成收益复盘。</p>
+</div>
+<div class="rounded-2xl border border-[#DBEAFE] bg-[#EFF6FF] p-4">
+<p class="font-bold text-gray-900">社交达人</p>
+<p class="text-gray-500 mt-1 leading-5">邀请 3 位好友加入攒钱挑战后解锁，可开启组队目标排行榜。</p>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-[28px] p-5 w-full max-w-sm hide shadow-2xl border border-gray-100" id="modal-skin-shop">
+<div class="flex items-center justify-between mb-5">
+<div>
+<p class="text-lg font-bold">钱多多外观商城</p>
+<p class="text-xs text-gray-400 mt-1">可用积分：2,480</p>
+</div>
+<button class="text-gray-400" onclick="closeModal()">
+<iconify-icon class="text-xl" icon="mdi:close"></iconify-icon>
+</button>
+</div>
+<div class="space-y-3">
+<div class="rounded-2xl border border-[#FDE7A8] bg-[#FFFBEF] p-4 flex items-center justify-between gap-4">
+<div>
+<p class="text-sm font-bold text-gray-900">财神猫限定皮肤</p>
+<p class="text-[11px] text-gray-500 mt-1">动态金币特效 + 主页头像框</p>
+</div>
+<button class="px-3 py-2 rounded-xl bg-[#F59E0B] text-white text-[11px] font-bold">1,800 积分</button>
+</div>
+<div class="rounded-2xl border border-[#DBEAFE] bg-[#F8FBFF] p-4 flex items-center justify-between gap-4">
+<div>
+<p class="text-sm font-bold text-gray-900">极简白金外观</p>
+<p class="text-[11px] text-gray-500 mt-1">底部导航与勋章页统一换肤</p>
+</div>
+<button class="px-3 py-2 rounded-xl bg-[#3B82F6] text-white text-[11px] font-bold">1,200 积分</button>
+</div>
+<div class="rounded-2xl border border-[#D1FAE5] bg-[#F0FDF4] p-4 flex items-center justify-between gap-4">
+<div>
+<p class="text-sm font-bold text-gray-900">守护者勋章挂件</p>
+<p class="text-[11px] text-gray-500 mt-1">聊天页和个人中心头像旁展示</p>
+</div>
+<button class="px-3 py-2 rounded-xl bg-[#10B981] text-white text-[11px] font-bold">980 积分</button>
+</div>
+</div>
+</div>
+<!-- 场景: 确认投资配置 -->
+<div class="bg-white rounded-3xl p-6 w-full max-w-xs hide" id="modal-confirm-invest">
+<div class="text-center">
+<div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+<iconify-icon class="text-4xl text-[#10B981]" icon="mdi:check-circle"></iconify-icon>
+</div>
+<h3 class="text-lg font-bold mb-2">配置确认</h3>
+<p class="text-xs text-gray-500 mb-6">钱多多将为您开启自动化理财，首笔 ¥500 将从您的招行活期账户划转至对应组合。</p>
+<button class="w-full py-4 bg-[#E60113] text-white font-bold rounded-xl shadow-lg mb-3" onclick="switchTab('invest'); closeModal();">确认开启</button>
+<button class="w-full py-3 text-gray-400 text-xs" onclick="closeModal()">取消</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+        let spendChart = null;
+        let guardianEnabled = true;
+        let spendInterceptTimer = null;
+        const investmentAgentContent = {
+            'rate-cut': {
+                user: '美联储降息预期升温，黄金板块迎来布局机会？想看适合新手的相关投资产品链接。',
+                reply: '这类消息通常意味着避险资产和低波动配置会重新受到关注。更适合新手先从低门槛、波动可接受的产品看起，再决定是否加一点黄金相关配置。',
+                links: [
+                    { label: '招行朝朝宝', hint: '流动性管理', href: 'https://www.cmbchina.com/' },
+                    { label: '黄金积存专区', hint: '小额分批配置', href: 'https://www.cmbchina.com/' },
+                    { label: '稳健固收精选', hint: '先稳住底仓', href: 'https://www.cmbchina.com/' }
+                ]
+            },
+            'dca-guide': {
+                user: '小白如何开启定投？我想直接看适合入门的基金投资产品链接。',
+                reply: '定投更适合用长期、分批、纪律化的方式开始。你可以先看低波动现金管理，再看稳健债基，最后再少量了解宽基指数类产品，节奏会更舒服。',
+                links: [
+                    { label: '新手理财专区', hint: '先建立现金仓', href: 'https://www.cmbchina.com/' },
+                    { label: '稳健债基筛选', hint: '波动相对更平滑', href: 'https://www.cmbchina.com/' },
+                    { label: '指数定投课堂', hint: '适合长期学习', href: 'https://www.cmbchina.com/' }
+                ]
+            },
+            'hotspot-alert': {
+                user: '我看到钱多多主动提醒：普京访华可能带来油气能源板块利好，这个机会适合我参与吗？',
+                reply: '已为你切换到“系统主动热点识别推荐”解读模式。AI 会实时监测宏观事件与金融热点，在识别到像“普京访华”这类可能影响资源合作与市场情绪的信号后，先结合你的风险等级、当前闲置资金和理财目标决定是否触达。当前结论是“可关注、轻参与、先控波动”：适配评级 A-，若你账户可用闲钱充足，可优先关注油气能源主题基金及上游资源链相关产品；若你的目标更偏稳健，则建议以固收+能源卫星仓的方式参与。下方继续提供热点解读、机会与风险分析、基金产品对比、止盈止损提醒，以及未来 30 天的长期陪伴规划。',
+                links: [
+                    { label: '热点解读卡', hint: '看懂访华事件如何传导到油气能源板块', href: 'https://www.cmbchina.com/' },
+                    { label: '机会 vs 风险分析', hint: '从事件催化到回撤风险一次看完', href: 'https://www.cmbchina.com/' },
+                    { label: '个性化基金对比', hint: '按你的画像筛 3 只能源主题候选产品', href: 'https://www.cmbchina.com/' },
+                    { label: '止盈止损提醒设置', hint: '先设纪律线，再决定是否参与', href: 'https://www.cmbchina.com/' }
+                ]
+            }
+        };
+
+        function fitAssetValues() {
+            document.querySelectorAll('.asset-stat-value').forEach(el => {
+                const container = el.closest('.asset-stat-content');
+                if(!container) return;
+
+                let size = 34;
+                el.style.fontSize = size + 'px';
+
+                const maxWidth = container.clientWidth;
+                while(el.scrollWidth > maxWidth && size > 18) {
+                    size -= 1;
+                    el.style.fontSize = size + 'px';
+                }
+            });
+        }
+        const weeklySpendSeries = [
+            {
+                day: '周一',
+                amount: 52,
+                categories: [
+                    { name: '餐饮', value: 28, color: '#E60113' },
+                    { name: '交通', value: 12, color: '#3B82F6' },
+                    { name: '日用', value: 7, color: '#10B981' },
+                    { name: '其他', value: 5, color: '#8B5CF6' }
+                ]
+            },
+            {
+                day: '周二',
+                amount: 48,
+                categories: [
+                    { name: '餐饮', value: 26, color: '#E60113' },
+                    { name: '交通', value: 10, color: '#3B82F6' },
+                    { name: '购物', value: 6, color: '#F59E0B' },
+                    { name: '其他', value: 6, color: '#8B5CF6' }
+                ]
+            },
+            {
+                day: '周三',
+                amount: 55,
+                categories: [
+                    { name: '餐饮', value: 30, color: '#E60113' },
+                    { name: '交通', value: 11, color: '#3B82F6' },
+                    { name: '日用', value: 8, color: '#10B981' },
+                    { name: '其他', value: 6, color: '#8B5CF6' }
+                ]
+            },
+            {
+                day: '周四',
+                amount: 49,
+                categories: [
+                    { name: '餐饮', value: 25, color: '#E60113' },
+                    { name: '交通', value: 12, color: '#3B82F6' },
+                    { name: '日用', value: 6, color: '#10B981' },
+                    { name: '其他', value: 6, color: '#8B5CF6' }
+                ]
+            },
+            {
+                day: '今天',
+                amount: 1370,
+                categories: [
+                    { name: '购物', value: 1299, color: '#F59E0B' },
+                    { name: '餐饮', value: 32, color: '#E60113' },
+                    { name: '交通', value: 18, color: '#3B82F6' },
+                    { name: '日用', value: 11, color: '#10B981' },
+                    { name: '其他', value: 10, color: '#8B5CF6' }
+                ]
+            },
+            {
+                day: '周六',
+                amount: 92,
+                categories: [
+                    { name: '餐饮', value: 45, color: '#E60113' },
+                    { name: '交通', value: 12, color: '#3B82F6' },
+                    { name: '购物', value: 15, color: '#F59E0B' },
+                    { name: '其他', value: 20, color: '#8B5CF6' }
+                ]
+            },
+            {
+                day: '周日',
+                amount: 88,
+                categories: [
+                    { name: '餐饮', value: 42, color: '#E60113' },
+                    { name: '交通', value: 10, color: '#3B82F6' },
+                    { name: '日用', value: 8, color: '#10B981' },
+                    { name: '其他', value: 28, color: '#8B5CF6' }
+                ]
+            }
+        ];
+
+        function renderSpendChart() {
+            const chartEl = document.getElementById('spend-chart');
+            if(!chartEl || typeof echarts === 'undefined') return;
+            if(!spendChart) {
+                spendChart = echarts.init(chartEl);
+            }
+
+            const labels = weeklySpendSeries.map(item => item.day);
+            const values = weeklySpendSeries.map(item => item.amount);
+
+            spendChart.setOption({
+                animation: false,
+                grid: { left: 10, right: 12, top: 16, bottom: 28, containLabel: true },
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(17,24,39,0.92)',
+                    borderWidth: 0,
+                    textStyle: { color: '#fff', fontSize: 11 },
+                    formatter: function(params) {
+                        const idx = params[0].dataIndex;
+                        const dayData = weeklySpendSeries[idx];
+                        const breakdown = dayData.categories.map(cat => {
+                            const share = ((cat.value / dayData.amount) * 100).toFixed(0);
+                            return `<div style="display:flex;justify-content:space-between;gap:12px;">
+                                <span><span style="color:${cat.color};">●</span> ${cat.name}</span>
+                                <span>¥${cat.value} (${share}%)</span>
+                            </div>`;
+                        }).join('');
+                        return `<div style="min-width:170px;">
+                            <div style="font-weight:700;margin-bottom:6px;">${dayData.day} · ¥${dayData.amount}</div>
+                            ${breakdown}
+                        </div>`;
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    data: labels,
+                    boundaryGap: false,
+                    axisTick: { show: false },
+                    axisLine: { lineStyle: { color: '#E5E7EB' } },
+                    axisLabel: { color: '#475569', fontSize: 10 }
+                },
+                yAxis: {
+                    type: 'value',
+                    show: false,
+                    max: 1500
+                },
+                series: [
+                    {
+                        type: 'line',
+                        data: [values[0], values[1], values[2], values[3], values[4], null, null],
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        lineStyle: { color: '#E60113', width: 3 },
+                        itemStyle: { color: '#E60113', borderColor: '#fff', borderWidth: 2 },
+                        areaStyle: { color: 'rgba(230,1,19,0.08)' }
+                    },
+                    {
+                        type: 'line',
+                        data: [null, null, null, null, values[4], values[5], values[6]],
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 7,
+                        lineStyle: { color: '#94A3B8', width: 2, type: 'dashed' },
+                        itemStyle: { color: '#CBD5E1', borderColor: '#fff', borderWidth: 2 }
+                    }
+                ]
+            });
+        }
+
+        function closeGuardianCard() {
+            const card = document.getElementById('guardian-card');
+            if(card) card.classList.add('hide');
+        }
+
+        function toggleTrendMenu() {
+            const menu = document.getElementById('trend-period-menu');
+            if(menu) menu.classList.toggle('hide');
+        }
+
+        function toggleGuardian() {
+            guardianEnabled = !guardianEnabled;
+            const toggle = document.getElementById('guardian-toggle');
+            const knob = document.getElementById('guardian-knob');
+            const iconWrap = document.getElementById('guardian-icon-wrap');
+            const icon = document.getElementById('guardian-icon');
+            const copy = document.getElementById('guardian-copy');
+
+            if(!toggle || !knob || !iconWrap || !icon || !copy) return;
+
+            if(guardianEnabled) {
+                toggle.classList.remove('bg-gray-300');
+                toggle.classList.add('bg-[#10B981]');
+                knob.classList.remove('left-1');
+                knob.classList.add('right-1');
+                iconWrap.classList.remove('bg-gray-100');
+                iconWrap.classList.add('bg-green-50');
+                icon.classList.remove('text-gray-400');
+                icon.classList.add('text-[#10B981]');
+                copy.textContent = '消费前自动评估风险，拦截冲动行为';
+            } else {
+                toggle.classList.remove('bg-[#10B981]');
+                toggle.classList.add('bg-gray-300');
+                knob.classList.remove('right-1');
+                knob.classList.add('left-1');
+                iconWrap.classList.remove('bg-green-50');
+                iconWrap.classList.add('bg-gray-100');
+                icon.classList.remove('text-[#10B981]');
+                icon.classList.add('text-gray-400');
+                copy.textContent = '智能监护已关闭，当前不再主动拦截冲动消费';
+            }
+        }
+
+        function updateBottomNavState(activeId) {
+            document.querySelectorAll('#page-main [id^=\"nav-\"]').forEach(b => {
+                b.classList.remove('tab-active');
+                b.classList.add('tab-inactive');
+            });
+            const navBtn = document.getElementById('nav-' + activeId);
+            if(navBtn) {
+                navBtn.classList.add('tab-active');
+                navBtn.classList.remove('tab-inactive');
+            }
+        }
+
+        // 页面切换逻辑
+        function switchPage(pageId, defaultTab) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hide'));
+            const target = document.getElementById(pageId);
+            if(target) target.classList.remove('hide');
+            closeModal();
+
+            if(pageId === 'page-survey') {
+                initSurvey();
+            }
+
+            if(pageId === 'page-adopt') {
+                document.getElementById('adopt-loading').classList.remove('hide');
+                document.getElementById('adopt-success').classList.add('hide');
+                setTimeout(() => {
+                    document.getElementById('adopt-loading').classList.add('hide');
+                    document.getElementById('adopt-success').classList.remove('hide');
+                }, 3000);
+            }
+
+            // 首次进入首页时默认显示对应tab，不经过switchTab避免tab覆盖
+            if(pageId === 'page-main') {
+                const tabToShow = defaultTab || 'spend';
+                document.querySelectorAll('#main-content > div').forEach(d => d.classList.add('hide'));
+                const tabContent = document.getElementById('tab-' + tabToShow);
+                if(tabContent) tabContent.classList.remove('hide');
+                updateBottomNavState(tabToShow);
+                if(tabToShow === 'spend') {
+                    renderSpendChart();
+                }
+            }
+        }
+
+        // Tab 切换逻辑
+        function switchTab(tabId) {
+            document.querySelectorAll('#main-content > div').forEach(d => d.classList.add('hide'));
+            document.getElementById('tab-' + tabId).classList.remove('hide');
+            
+            // 更新导航样式
+            updateBottomNavState(tabId);
+            
+            // 如果page-main不可见，直接DOM操作显示它（不经过switchPage避免tab覆盖）
+            const pageMain = document.getElementById('page-main');
+            if(pageMain.classList.contains('hide')) {
+                document.querySelectorAll('section').forEach(s => s.classList.add('hide'));
+                pageMain.classList.remove('hide');
+                closeModal();
+            }
+
+            if(tabId === 'spend') {
+                renderSpendChart();
+            }
+        }
+
+        // 问卷逻辑
+        let currentStep = 0;
+        const surveyTitles = [
+            '放心我会保护你的隐私的',
+            '消费要理性',
+            '我猜你可能是理财小白',
+            '钱生钱是门学问',
+            '准备好开始存钱了吗'
+        ];
+        const surveyData = [
+            { q: "你每月的生活费大约是多少？", options: ["1000元以下", "1000-2000元", "2000-3000元", "3000元以上"] },
+            { q: "你每月能存下多少钱？", options: ["基本存不下", "500元以内", "500-1000元", "1000元以上"] },
+            { q: "你是否有冲动消费的习惯？", options: ["经常冲动消费", "偶尔会冲动", "比较理性", "非常克制"] },
+            { q: "你对投资理财的了解程度如何？", options: ["完全不懂", "了解一点", "有一定经验", "比较专业"] },
+            { q: "你愿意将多少收入用于投资？", options: ["不想承担风险", "10%以内", "10%-20%", "20%以上"] }
+        ];
+
+        function initSurvey() {
+            currentStep = 0;
+            renderSurvey();
+        }
+
+        function renderSurvey() {
+            const data = surveyData[currentStep];
+            const container = document.getElementById('survey-content');
+            const title = document.getElementById('survey-title');
+            const runner = document.getElementById('survey-runner');
+            const trackVisual = document.getElementById('survey-track-visual');
+            const progressRatio = (currentStep + 1) / 5;
+            if(title) title.textContent = surveyTitles[currentStep] || '认识你，很高兴';
+            container.innerHTML = `
+                <p class="text-lg font-bold mb-6">${data.q}</p>
+                <div class="space-y-4">
+                    ${data.options.map((opt, i) => `
+                        <div onclick="selectOption(${i})" class="survey-opt flex items-center justify-between p-4 bg-white border border-gray-100 rounded-2xl cursor-pointer transition-all hover:bg-red-50">
+                            <span class="text-sm font-medium">${opt}</span>
+                            <div class="w-5 h-5 border-2 border-gray-200 rounded-full flex items-center justify-center check-icon hide">
+                                <iconify-icon icon="mdi:check" class="text-white text-xs"></iconify-icon>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('survey-progress').style.width = (progressRatio * 100) + '%';
+            document.getElementById('survey-step').innerText = (currentStep + 1) + '/5';
+            document.getElementById('survey-next').disabled = true;
+            if(runner) runner.style.left = (progressRatio * 100) + '%';
+            if(trackVisual) trackVisual.style.left = ((currentStep / 4) * 58) + '%';
+        }
+
+        function selectOption(index) {
+            document.querySelectorAll('.survey-opt').forEach((el, i) => {
+                if(i === index) {
+                    el.classList.add('border-[#E60113]', 'bg-red-50');
+                    el.querySelector('.check-icon').classList.remove('hide');
+                    el.querySelector('.check-icon').classList.add('bg-[#E60113]', 'border-[#E60113]');
+                } else {
+                    el.classList.remove('border-[#E60113]', 'bg-red-50');
+                    el.querySelector('.check-icon').classList.add('hide');
+                }
+            });
+            document.getElementById('survey-next').disabled = false;
+        }
+
+        function nextSurvey() {
+            if(currentStep < 4) {
+                currentStep++;
+                renderSurvey();
+            } else {
+                switchPage('page-result');
+            }
+        }
+
+        function prevSurvey() {
+            if(currentStep > 0) {
+                currentStep--;
+                renderSurvey();
+            } else {
+                switchPage('page-welcome');
+            }
+        }
+
+        // 弹窗逻辑
+        function showModal(modalId) {
+            document.getElementById('modal-container').classList.remove('hide');
+            document.querySelectorAll('#modal-container > div').forEach(m => m.classList.add('hide'));
+            document.getElementById(modalId).classList.remove('hide');
+            const trendMenu = document.getElementById('trend-period-menu');
+            if(trendMenu) trendMenu.classList.add('hide');
+        }
+
+        function closeModal() {
+            if(spendInterceptTimer) {
+                clearTimeout(spendInterceptTimer);
+                spendInterceptTimer = null;
+            }
+            document.getElementById('modal-container').classList.add('hide');
+        }
+
+        function openInvestmentAgent(topic) {
+            const content = investmentAgentContent[topic];
+            if(!content) return;
+
+            const userEl = document.getElementById('invest-agent-user-message');
+            const replyEl = document.getElementById('invest-agent-reply');
+            const linksEl = document.getElementById('invest-agent-links');
+
+            if(userEl) userEl.textContent = content.user;
+            if(replyEl) replyEl.textContent = content.reply;
+
+            if(linksEl) {
+                linksEl.innerHTML = content.links.map(link => `
+                    <a class="flex items-center justify-between rounded-2xl border border-[#F5E7D5] bg-white px-3 py-3 hover:border-[#E60113]/20 transition-colors" href="${link.href}" target="_blank" rel="noopener noreferrer">
+                        <div>
+                            <p class="text-[11px] font-bold text-gray-900">${link.label}</p>
+                            <p class="text-[10px] text-gray-400 mt-1">${link.hint}</p>
+                        </div>
+                        <iconify-icon class="text-lg text-[#E60113]" icon="mdi:open-in-new"></iconify-icon>
+                    </a>
+                `).join('');
+            }
+
+            showModal('modal-invest-agent');
+        }
+
+        function simulateInviteSuccess() {
+            closeModal();
+            setTimeout(() => {
+                alert('已生成模拟邀请并发送给 3 位好友，等待他们加入你的攒钱小队。');
+            }, 120);
+        }
+
+        function startSpendInterception() {
+            showModal('modal-feature-loading');
+            spendInterceptTimer = setTimeout(() => {
+                spendInterceptTimer = null;
+                showModal('modal-feature-analysis');
+            }, 3000);
+        }
+
+        function simulateInterceptionChoice(message) {
+            closeModal();
+            setTimeout(() => {
+                alert(message);
+            }, 120);
+        }
+
+        // AI 对话逻辑
+        function toggleAIChat() {
+            const drawer = document.getElementById('ai-chat-drawer');
+            const inner = drawer.querySelector('div');
+            if(drawer.classList.contains('hide')) {
+                drawer.classList.remove('hide');
+                setTimeout(() => {
+                    drawer.classList.remove('opacity-0');
+                    inner.classList.remove('-translate-x-full');
+                }, 10);
+            } else {
+                drawer.classList.add('opacity-0');
+                inner.classList.add('-translate-x-full');
+                setTimeout(() => drawer.classList.add('hide'), 300);
+            }
+        }
+
+        // 初始化显示欢迎页
+        switchPage('page-welcome');
+        //fitAssetValues();
+        window.addEventListener('resize', () => {
+            if(spendChart) spendChart.resize();
+            //fitAssetValues();
+        });
+
+        const welcomeSubtitleLines = [
+            '嗨，我是钱多多，你的 AI 理财小助手。',
+            '我会帮你分析消费习惯，看看钱都花去了哪里。',
+            '再一起制定更适合你的理财方案，慢慢靠近财务自由。'
+        ];
+        let welcomeSubtitleIndex = 0;
+
+        function rotateWelcomeSubtitle() {
+            const subtitle = document.getElementById('welcome-subtitle');
+            if(!subtitle) return;
+            welcomeSubtitleIndex = (welcomeSubtitleIndex + 1) % welcomeSubtitleLines.length;
+            subtitle.classList.remove('subtitle-enter');
+            void subtitle.offsetWidth;
+            subtitle.textContent = welcomeSubtitleLines[welcomeSubtitleIndex];
+            subtitle.classList.add('subtitle-enter');
+        }
+
+        setInterval(rotateWelcomeSubtitle, 2600);
+
+        // 动态更新时间
+        function updateStatusTime() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('status-time').textContent = h + ':' + m;
+        }
+        updateStatusTime();
+        setInterval(updateStatusTime, 30000);
+    </script>
+</body>
+</html>
